@@ -1,0 +1,99 @@
+<!-- ✅ Navbar -->
+<nav class="navbar">
+  <div class="logo" (click)="goHome()">
+    <img src="Screen_Sorrt.png" alt="SpotFit Logo" class="logo-img" />
+    <span>Spot<span>Fit</span></span>
+  </div>
+
+  <ul class="nav-links">
+    <li (click)="filterByType('Lower')">Lower</li>
+    <li (click)="filterByType('Sando')">Sando</li>
+    <li (click)="filterByType('T-Shirt')">T-Shirt</li>
+    <li (click)="filterByType('Nikker')">Nikker</li>
+    <li (click)="filterByType('New Arrivals')">New Arrivals</li>
+    <li (click)="resetFilter()">All</li>
+  </ul>
+
+  <div class="nav-icons">
+    <i class="fa fa-user" (click)="goLogin()"></i>
+    <i class="fa fa-search"></i>
+
+    <!-- 🛒 Cart with Badge -->
+    <div class="cart-icon" (click)="goToCart()">
+      <img src="CartImage.jpg" alt="Cart" class="cart-img" />
+      <span *ngIf="cartCount > 0" class="cart-badge">{{ cartCount }}</span>
+    </div>
+
+    <!-- ✅ Keep button INSIDE nav-icons -->
+    <button class="btn-login" (click)="goLogin()">Login</button>
+  </div>
+</nav>
+
+
+<!-- ✅ Featured Hero Banner -->
+<div *ngIf="featuredProduct" class="hero-banner">
+  <img [src]="featuredProduct.imageUrl" alt="{{featuredProduct.title}}" />
+  <div class="hero-text">
+    <h1>{{ featuredProduct.title }}</h1>
+    <p>{{ featuredProduct.description }}</p>
+    <button class="btn-shop">Shop Now</button>
+  </div>
+</div>
+
+<!-- ✅ Product Grid -->
+<div class="product-container">
+  <div class="product-card" *ngFor="let p of normalProducts">
+    <div class="image-wrapper">
+      <img *ngIf="p.imageUrl" [src]="p.imageUrl" alt="{{p.title}}" />
+    </div>
+
+    <div class="product-info">
+      <h3 class="title">{{ p.title }}</h3>
+      <p class="description">{{ p.description }}</p>
+
+      <!-- ✅ Price -->
+      <div class="price-section" *ngIf="p.discount && p.discount > 0; else noDiscount">
+        <span class="old-price">₹{{ p.price }}</span>
+        <span class="new-price">₹{{ getDiscountedPrice(p) }}</span>
+        <span class="discount-tag">-{{ p.discount }}%</span>
+      </div>
+      <ng-template #noDiscount>
+        <span class="new-price">₹{{ p.price }}</span>
+      </ng-template>
+
+      <!-- ✅ Sizes (visible on page) -->
+      <div class="sizes" *ngIf="p.sizes && p.sizes.length > 0">
+        <strong>Sizes:</strong>
+        <span *ngFor="let size of p.sizes" class="size-chip">{{ size }}</span>
+      </div>
+
+      <!-- ✅ Stock -->
+      <!-- <div class="Ava" [ngClass]="{ 'out-of-stock': p.quantity === 0 }">
+        <span *ngIf="p.quantity > 0">In Stock: {{ p.quantity }}</span>
+        <span *ngIf="p.quantity === 0">Out of Stock</span>
+      </div> -->
+
+     <!-- ✅ Add to Cart OR Quantity Controls -->
+<div class="price-add">
+  <ng-container *ngIf="getCartQuantity(p) > 0; else addToCartBtn">
+    <div class="quantity-controls">
+      <button class="btn-qty" (click)="decreaseQuantity(p)">-</button>
+      <span class="qty-display">{{ getCartQuantity(p) }}</span>
+      <button class="btn-qty" (click)="increaseQuantity(p)">+</button>
+    </div>
+  </ng-container>
+
+  <ng-template #addToCartBtn>
+    <button
+      class="btn-add"
+      [disabled]="p.quantity === 0"
+      (click)="selectSizeAndAdd(p)"
+    >
+      {{ p.quantity === 0 ? 'Out of Stock' : 'Add to Cart' }}
+    </button>
+  </ng-template>
+</div>
+
+    </div>
+  </div>
+</div>

@@ -10,6 +10,7 @@
           "style": "scss"
         }
       },
+     
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
@@ -29,9 +30,7 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.scss"
-            ]
+            "styles": ["node_modules/bootstrap/dist/css/bootstrap.min.css", "src/styles.scss"]
           },
           "configurations": {
             "production": {
@@ -94,5 +93,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "18231730-ad64-4527-89d2-082ac03a2559"
   }
 }

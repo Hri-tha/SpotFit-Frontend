@@ -1,0 +1,91 @@
+<div class="add-product-container">
+  <div class="form-card">
+    <h2 class="form-title">➕ Add New Product</h2>
+
+    <form (ngSubmit)="onSubmit()" #f="ngForm" class="form-body">
+      
+      <!-- Title -->
+      <div class="form-group">
+        <label for="title">Product Title</label>
+        <input type="text" id="title" [(ngModel)]="product.title" name="title" required />
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" [(ngModel)]="product.description" name="description"></textarea>
+      </div>
+
+      <!-- Price -->
+      <div class="form-group">
+        <label for="price">Price (₹)</label>
+        <input type="number" id="price" [(ngModel)]="product.price" name="price" required />
+      </div>
+
+      <!-- Image URL -->
+      <div class="form-group">
+        <label for="imageUrl">Image URL</label>
+        <input type="text" id="imageUrl" [(ngModel)]="product.imageUrl" name="imageUrl" />
+      </div>
+
+      <!-- File Upload -->
+      <div class="form-group">
+        <label for="file">Upload Image</label>
+        <input type="file" id="file" (change)="onFileSelected($event)" />
+      </div>
+
+      <!-- Featured -->
+      <div class="form-group checkbox-group">
+        <label>
+          <input type="checkbox" [(ngModel)]="product.featured" name="featured" />
+          Mark as Featured
+        </label>
+      </div>
+
+      <!-- ✅ Product Type (Admin Only for Now) -->
+<div class="form-group">
+  <label for="type">Product Type</label>
+  <select id="type" [(ngModel)]="product.type" name="type" required>
+    <option value="">-- Select Type --</option>
+    <option value="Lower">Lower</option>
+    <option value="Sando">Sando</option>
+    <option value="T-Shirt">T-Shirt</option>
+    <option value="Nikker">Nikker</option>
+    <option value="Nikker">New Arrivals</option>
+  </select>
+</div>
+
+
+      <!-- Quantity -->
+      <div class="form-group">
+        <label for="quantity">Quantity</label>
+        <input type="number" id="quantity" [(ngModel)]="product.quantity" name="quantity" min="0" />
+      </div>
+
+      <!-- Discount -->
+      <div class="form-group">
+        <label for="discount">Discount (%)</label>
+        <input type="number" id="discount" [(ngModel)]="product.discount" name="discount" min="0" max="100" />
+      </div>
+
+      <!-- Sizes -->
+      <div class="form-group">
+        <label for="size">Add Size</label>
+        <input type="text" id="size" name="newSize" [(ngModel)]="newSize" placeholder="e.g. S, M, L, XL" />
+        <button type="button" (click)="addSize()">Add</button>
+      </div>
+
+      <ul class="size-list">
+        <li *ngFor="let size of product.sizes; let i = index">
+          {{ size }}
+          <button type="button" (click)="removeSize(i)">❌</button>
+        </li>
+      </ul>
+
+      <!-- Submit -->
+      <div class="form-footer">
+        <button type="submit" class="btn-submit" [disabled]="!f.valid">Add Product</button>
+      </div>
+    </form>
+  </div>
+</div>
