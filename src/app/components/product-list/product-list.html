@@ -1,11 +1,30 @@
 <!-- ✅ Navbar -->
 <nav class="navbar">
-  <div class="logo" (click)="goHome()">
+  <!-- Left hamburger menu -->
+  <div class="hamburger-left mobile-only" (click)="toggleMenu()">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+<!-- Mobile logo (visible only on mobile) -->
+<div class="mobile-nav-logo mobile-only" (click)="goHome()">
+  <span style="font-size:16px;font-weight:700;letter-spacing:0.5px;
+               font-family:Poppins,Arial,sans-serif;color:#222;">
+    Spot<span style="color:#c1121f;">Fit</span>
+  </span>
+</div>
+
+
+
+  <!-- Desktop logo (hidden on mobile) -->
+  <div class="logo desktop-only" (click)="goHome()">
     <img src="Screen_Sorrt.png" alt="SpotFit Logo" class="logo-img" />
     <span>Spot<span>Fit</span></span>
   </div>
 
-  <ul class="nav-links">
+  <!-- Normal nav links (hidden on mobile) -->
+  <ul class="nav-links desktop-only">
     <li (click)="filterByType('Lower')">Lower</li>
     <li (click)="filterByType('Sando')">Sando</li>
     <li (click)="filterByType('T-Shirt')">T-Shirt</li>
@@ -15,8 +34,11 @@
   </ul>
 
   <div class="nav-icons">
-    <i class="fa fa-user" (click)="goLogin()"></i>
-    <i class="fa fa-search"></i>
+    <i class="fa fa-user desktop-only" (click)="goLogin()"></i>
+    <i class="fa fa-search desktop-only"></i>
+
+    <!-- Mobile search icon -->
+    <i class="fa fa-search mobile-only mobile-search-icon"></i>
 
     <!-- 🛒 Cart with Badge -->
     <div class="cart-icon" (click)="goToCart()">
@@ -24,11 +46,31 @@
       <span *ngIf="cartCount > 0" class="cart-badge">{{ cartCount }}</span>
     </div>
 
-    <!-- ✅ Keep button INSIDE nav-icons -->
-    <button class="btn-login" (click)="goLogin()">Login</button>
+    <button class="btn-login desktop-only" (click)="goLogin()">Login</button>
   </div>
 </nav>
 
+<!-- Mobile menu (left side) -->
+<div class="mobile-menu-left" [class.active]="menuOpen">
+  <div class="mobile-logo">
+    <img src="Screen_Sorrt.png" alt="SpotFit Logo" />
+    <span>Spot<span>Fit</span></span>
+  </div>
+  
+  <ul>
+    <li (click)="filterByType('Lower'); toggleMenu()"><i class="fas fa-tshirt"></i> Lower</li>
+    <li (click)="filterByType('Sando'); toggleMenu()"><i class="fas fa-vest"></i> Sando</li>
+    <li (click)="filterByType('T-Shirt'); toggleMenu()"><i class="fas fa-tshirt"></i> T-Shirt</li>
+    <li (click)="filterByType('Nikker'); toggleMenu()"><i class="fas fa-shoe-prints"></i> Nikker</li>
+    <li (click)="filterByType('New Arrivals'); toggleMenu()"><i class="fas fa-star"></i> New Arrivals</li>
+    <li (click)="resetFilter(); toggleMenu()"><i class="fas fa-boxes"></i> All Products</li>
+    <li (click)="goLogin(); toggleMenu()"><i class="fas fa-user"></i> Login</li>
+    <li (click)="goToCart(); toggleMenu()"><i class="fas fa-shopping-cart"></i> Cart ({{ cartCount }})</li>
+  </ul>
+</div>
+
+<!-- Overlay for when menu is open -->
+<div class="overlay" [class.active]="menuOpen" (click)="toggleMenu()"></div>
 
 <!-- ✅ Featured Hero Banner -->
 <div *ngIf="featuredProduct" class="hero-banner">
@@ -52,7 +94,10 @@
       <p class="description">{{ p.description }}</p>
 
       <!-- ✅ Price -->
-      <div class="price-section" *ngIf="p.discount && p.discount > 0; else noDiscount">
+      <div
+        class="price-section"
+        *ngIf="p.discount && p.discount > 0; else noDiscount"
+      >
         <span class="old-price">₹{{ p.price }}</span>
         <span class="new-price">₹{{ getDiscountedPrice(p) }}</span>
         <span class="discount-tag">-{{ p.discount }}%</span>
@@ -67,33 +112,26 @@
         <span *ngFor="let size of p.sizes" class="size-chip">{{ size }}</span>
       </div>
 
-      <!-- ✅ Stock -->
-      <!-- <div class="Ava" [ngClass]="{ 'out-of-stock': p.quantity === 0 }">
-        <span *ngIf="p.quantity > 0">In Stock: {{ p.quantity }}</span>
-        <span *ngIf="p.quantity === 0">Out of Stock</span>
-      </div> -->
+      <!-- ✅ Add to Cart OR Quantity Controls -->
+      <div class="price-add">
+        <ng-container *ngIf="getCartQuantity(p) > 0; else addToCartBtn">
+          <div class="quantity-controls">
+            <button class="btn-qty" (click)="decreaseQuantity(p)">-</button>
+            <span class="qty-display">{{ getCartQuantity(p) }}</span>
+            <button class="btn-qty" (click)="increaseQuantity(p)">+</button>
+          </div>
+        </ng-container>
 
-     <!-- ✅ Add to Cart OR Quantity Controls -->
-<div class="price-add">
-  <ng-container *ngIf="getCartQuantity(p) > 0; else addToCartBtn">
-    <div class="quantity-controls">
-      <button class="btn-qty" (click)="decreaseQuantity(p)">-</button>
-      <span class="qty-display">{{ getCartQuantity(p) }}</span>
-      <button class="btn-qty" (click)="increaseQuantity(p)">+</button>
-    </div>
-  </ng-container>
-
-  <ng-template #addToCartBtn>
-    <button
-      class="btn-add"
-      [disabled]="p.quantity === 0"
-      (click)="selectSizeAndAdd(p)"
-    >
-      {{ p.quantity === 0 ? 'Out of Stock' : 'Add to Cart' }}
-    </button>
-  </ng-template>
-</div>
-
+        <ng-template #addToCartBtn>
+          <button
+            class="btn-add"
+            [disabled]="p.quantity === 0"
+            (click)="selectSizeAndAdd(p)"
+          >
+            {{ p.quantity === 0 ? "Out of Stock" : "Add to Cart" }}
+          </button>
+        </ng-template>
+      </div>
     </div>
   </div>
 </div>

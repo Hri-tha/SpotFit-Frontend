@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { Product } from '../../models/product';
 import { ProductService } from '../../services/product.service';
@@ -19,6 +19,7 @@ export class ProductListComponent implements OnInit {
   allProducts: Product[] = [];
 
   cartCount: number = 0;
+  menuOpen: boolean = false;
 
   constructor(
     private svc: ProductService,
@@ -40,6 +41,25 @@ export class ProductListComponent implements OnInit {
     });
   }
 
+  // Close menu when clicking outside on mobile
+  @HostListener('window:click', ['$event'])
+  onClick(event: Event) {
+    if (this.menuOpen && window.innerWidth <= 768) {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.mobile-menu-left') && !target.closest('.hamburger-left')) {
+        this.menuOpen = false;
+      }
+    }
+  }
+
+  // Close menu on escape key
+  @HostListener('window:keydown', ['$event'])
+  onKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape' && this.menuOpen) {
+      this.menuOpen = false;
+    }
+  }
+
   filterByType(type: string) {
     this.normalProducts = this.allProducts.filter(
       (p) => p.type === type && !p.featured
@@ -47,20 +67,24 @@ export class ProductListComponent implements OnInit {
     this.featuredProduct = this.allProducts.find(
       (p) => p.type === type && p.featured
     );
+    this.menuOpen = false; // Close menu after selection
   }
 
   resetFilter() {
     this.normalProducts = this.allProducts.filter((p) => !p.featured);
     this.featuredProduct = this.allProducts.find((p) => p.featured);
+    this.menuOpen = false; // Close menu after selection
   }
 
   goHome() {
     this.resetFilter();
     this.router.navigate(['/']);
+    this.menuOpen = false; // Close menu
   }
 
   goLogin() {
     this.router.navigate(['/login']);
+    this.menuOpen = false; // Close menu
   }
 
   getDiscountedPrice(p: Product): number {
@@ -86,38 +110,41 @@ export class ProductListComponent implements OnInit {
     this.cartService.addToCart(product, selectedSize || '');
   }
 
-increaseQuantity(product: Product) {
-  const item = this.cartService
-    .getCartItems()
-    .find((i) => i.product._id === product._id);
+  increaseQuantity(product: Product) {
+    const item = this.cartService
+      .getCartItems()
+      .find((i) => i.product._id === product._id);
 
-  if (item) {
-    this.cartService.addToCart(product, item.size || '');
-  } else {
-    this.selectSizeAndAdd(product);
+    if (item) {
+      this.cartService.addToCart(product, item.size || '');
+    } else {
+      this.selectSizeAndAdd(product);
+    }
   }
-}
 
+  decreaseQuantity(product: Product) {
+    const item = this.cartService
+      .getCartItems()
+      .find((i) => i.product._id === product._id);
 
-decreaseQuantity(product: Product) {
-  const item = this.cartService
-    .getCartItems()
-    .find((i) => i.product._id === product._id);
-
-  if (item) {
-    this.cartService.removeFromCart(product._id, item.size || '');
+    if (item) {
+      this.cartService.removeFromCart(product._id, item.size || '');
+    }
   }
-}
-
 
   getCartQuantity(product: Product): number {
-  const item = this.cartService
-    .getCartItems()
-    .find((i) => i.product._id === product._id);
-  return item ? item.quantity : 0;
-}
+    const item = this.cartService
+      .getCartItems()
+      .find((i) => i.product._id === product._id);
+    return item ? item.quantity : 0;
+  }
 
   goToCart() {
-    this.router.navigate(['/cart']); // 🚀 In future make Buy Now page
+    this.router.navigate(['/cart']);
+    this.menuOpen = false; // Close menu
+  }
+
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
   }
 }

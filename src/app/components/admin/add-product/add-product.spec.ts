@@ -16,15 +16,16 @@ export class AddProductComponent {
   // ✅ Default product factory
   private getDefaultProduct(): Product {
     return {
-      title: '',
-      description: '',
-      price: 0,
-      imageUrl: '',
-      features: [],
-      featured: false,
-      quantity: 0,
-      sizes: [],
-      discount: 0
+     title: '',
+  description: '',
+  price: undefined as number | undefined,
+  imageUrl: '',
+  features: [] as string[],
+  featured: false,
+  quantity: 0,
+  sizes: [] as string[],
+  discount: 0,
+  type: ''
     };
   }
 
@@ -32,7 +33,7 @@ export class AddProductComponent {
     console.log('Product Added:', this.product);
     alert(`${this.product.title} added successfully! 🎉`);
 
-    // ✅ Reset form
+    // Reset form
     this.product = this.getDefaultProduct();
   }
 }

@@ -23,7 +23,7 @@ export class AddProductComponent {
   quantity: 0,
   sizes: [] as string[],
   discount: 0,
-  type: '' // ✅ new field
+  type: '' 
 };
 
 
@@ -31,7 +31,7 @@ export class AddProductComponent {
   newSize: string = '';
   file?: File;
 
-  // ✅ Features
+  // Features
   addFeature() {
     if (this.newFeature.trim()) {
       this.product.features.push(this.newFeature.trim());
@@ -42,7 +42,7 @@ export class AddProductComponent {
     this.product.features.splice(i, 1);
   }
 
-  // ✅ Sizes
+  // Sizes
   addSize() {
     if (this.newSize.trim() && !this.product.sizes.includes(this.newSize.trim().toUpperCase())) {
       this.product.sizes.push(this.newSize.trim().toUpperCase());
@@ -57,7 +57,7 @@ export class AddProductComponent {
     this.file = event.target.files[0];
   }
 
-  // ✅ Submit
+  // Submit
   onSubmit() {
     const productToSubmit = { 
       ...this.product, 
