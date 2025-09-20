@@ -2,15 +2,21 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Product } from '../models/product';
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   api = `${environment.apiUrl}/products`;
+  
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.api);
+    return this.http.get<Product[]>(this.api).pipe(
+      catchError(error => {
+        console.error('Error fetching products:', error);
+        return throwError(() => new Error('Failed to fetch products'));
+      })
+    );
   }
 
   add(product: Partial<Product>, file?: File) {

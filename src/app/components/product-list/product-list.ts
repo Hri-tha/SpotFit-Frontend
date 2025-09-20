@@ -140,8 +140,8 @@ export class ProductListComponent implements OnInit {
   }
 
   goToCart() {
-    this.router.navigate(['/cart']);
-    this.menuOpen = false; // Close menu
+   this.router.navigate(['/checkout']);
+  this.menuOpen = false;
   }
 
   toggleMenu() {

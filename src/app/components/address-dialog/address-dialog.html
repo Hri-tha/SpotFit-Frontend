@@ -1,0 +1,80 @@
+<!-- address-dialog.html - UPDATED -->
+<h2 mat-dialog-title>{{ isEdit ? 'Edit Address' : 'Add New Address' }}</h2>
+<mat-dialog-content>
+  <form class="address-form">
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Full Name *</mat-label>
+        <input matInput [(ngModel)]="address.fullName" name="fullName" required placeholder="Enter your full name">
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Phone Number *</mat-label>
+        <input matInput [(ngModel)]="address.phone" name="phone" type="tel" required placeholder="Enter your phone number">
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Address Line 1 *</mat-label>
+        <input matInput [(ngModel)]="address.addressLine1" name="addressLine1" required placeholder="Street address, P.O. box">
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Address Line 2 (Optional)</mat-label>
+        <input matInput [(ngModel)]="address.addressLine2" name="addressLine2" placeholder="Apartment, suite, unit, building, floor, etc.">
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>City *</mat-label>
+        <input matInput [(ngModel)]="address.city" name="city" required placeholder="Enter your city">
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>State *</mat-label>
+        <input matInput [(ngModel)]="address.state" name="state" required placeholder="Enter your state">
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Pincode *</mat-label>
+        <input matInput [(ngModel)]="address.pincode" name="pincode" required placeholder="Enter pincode">
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Country *</mat-label>
+        <input matInput [(ngModel)]="address.country" name="country" required placeholder="Enter your country">
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-label>Address Type:</mat-label>
+      <mat-radio-group [(ngModel)]="address.type" name="type">
+        <mat-radio-button value="home">Home</mat-radio-button>
+        <mat-radio-button value="work">Work</mat-radio-button>
+        <mat-radio-button value="other">Other</mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <div class="form-row">
+      <mat-checkbox [(ngModel)]="address.isDefault" name="isDefault">
+        Set as default address
+      </mat-checkbox>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSave()">Save Address</button>
+</mat-dialog-actions>

@@ -1,0 +1,24 @@
+/* src/app/components/address-dialog/address-dialog.component.scss */
+.address-form {
+  display: flex;
+  flex-direction: column;
+  min-width: 400px;
+}
+
+.form-row {
+  margin-bottom: 16px;
+  
+  mat-form-field {
+    width: 100%;
+  }
+  
+  mat-radio-group {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+  }
+  
+  mat-checkbox {
+    margin-top: 8px;
+  }
+}

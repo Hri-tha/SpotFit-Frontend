@@ -1,0 +1,19 @@
+<!-- src/app/components/order-success/order-success.component.html -->
+<div class="order-success-container">
+  <div class="success-card">
+    <div class="success-icon">✓</div>
+    <h1>Order Successful!</h1>
+    <p>Thank you for your purchase</p>
+    
+    <div class="order-details">
+      <p><strong>Order ID:</strong> {{ orderId }}</p>
+      <p><strong>Payment ID:</strong> {{ paymentId }}</p>
+    </div>
+    
+    <p>Your order has been confirmed and will be shipped soon.</p>
+    
+    <button class="btn-continue" (click)="continueShopping()">
+      Continue Shopping
+    </button>
+  </div>
+</div>

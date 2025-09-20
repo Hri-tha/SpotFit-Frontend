@@ -1,0 +1,124 @@
+<!-- src/app/components/checkout/checkout.html (updated address section) -->
+<div class="checkout-container">
+  <div class="checkout-header">
+    <h1>Checkout</h1>
+    <div class="progress-indicator">
+      <div class="step active">Cart</div>
+      <div class="step active">Address</div>
+      <div class="step">Payment</div>
+    </div>
+  </div>
+
+  <div class="checkout-content">
+    <!-- Left column: Order summary and delivery address -->
+    <div class="checkout-left">
+      <!-- Delivery Address Section -->
+      <!-- checkout.html - UPDATED address section -->
+<div class="address-section">
+  <h2>Delivery Address</h2>
+  
+  <div *ngIf="selectedAddress; else noAddress" class="address-card selected">
+    <div class="address-details">
+      <h3>{{ selectedAddress.fullName }}</h3>
+      <p>{{ selectedAddress.addressLine1 }}</p>
+      <p *ngIf="selectedAddress.addressLine2">{{ selectedAddress.addressLine2 }}</p>
+      <p>{{ selectedAddress.city }}, {{ selectedAddress.state }} - {{ selectedAddress.pincode }}</p>
+      <p>{{ selectedAddress.country }}</p>
+      <p class="phone">Phone: {{ selectedAddress.phone }}</p>
+      <span class="address-type">{{ selectedAddress.type }}</span>
+    </div>
+    <button class="btn-change-address" (click)="changeAddress()">Change</button>
+  </div>
+  
+  <ng-template #noAddress>
+    <div class="address-card placeholder">
+      <div class="address-details">
+        <h3>Add Delivery Address</h3>
+        <p>Please add a delivery address to continue with your order</p>
+      </div>
+      <button class="btn-change-address" (click)="changeAddress()">Add Address</button>
+    </div>
+  </ng-template>
+</div>
+
+      <!-- Add this to your checkout.html file -->
+<button class="btn-pay-now" (click)="payWithRazorpay()" [disabled]="isLoading">
+  <span *ngIf="!isLoading">Proceed to Pay ₹{{ formatCurrency(getFinalTotal()) }}</span>
+  <span *ngIf="isLoading">Processing...</span>
+</button>
+
+      <!-- Order Summary Section -->
+      <div class="order-summary">
+        <h2>Order Summary</h2>
+        <div class="order-items">
+          <div *ngFor="let item of cartItems" class="order-item">
+            <div class="item-image">
+              <img [src]="item.product.imageUrl" [alt]="item.product.title">
+            </div>
+            <div class="item-details">
+              <h3>{{ item.product.title }}</h3>
+              <p *ngIf="item.size" class="item-size">Size: {{ item.size }}</p>
+              
+              <!-- Show discounted price and original price if discounted -->
+              <div class="price-section" *ngIf="item.product.discount && item.product.discount > 0; else noDiscount">
+                <span class="old-price">₹{{ formatCurrency(item.product.price) }}</span>
+                <span class="new-price">₹{{ formatCurrency(getDiscountedPrice(item.product)) }}</span>
+                <span class="discount-tag">-{{ item.product.discount }}%</span>
+              </div>
+              <ng-template #noDiscount>
+                <span class="new-price">₹{{ formatCurrency(item.product.price) }}</span>
+              </ng-template>
+              
+              <div class="item-quantity">Quantity: {{ item.quantity }}</div>
+            </div>
+            <div class="item-total">
+              ₹{{ formatCurrency(getDiscountedPrice(item.product) * item.quantity) }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right column: Payment summary -->
+    <div class="checkout-right">
+      <div class="payment-summary">
+        <h2>Payment Summary</h2>
+        
+        <div class="summary-row">
+          <span>Items ({{ getTotalItems() }}):</span>
+          <span>₹{{ formatCurrency(totalAmount) }}</span>
+        </div>
+        
+        <div class="summary-row">
+          <span>Delivery:</span>
+          <span *ngIf="totalAmount >= 500; else deliveryCharge">FREE</span>
+          <ng-template #deliveryCharge>
+            <span>₹49</span>
+          </ng-template>
+        </div>
+        
+        <div *ngIf="totalAmount < 1000" class="summary-row">
+          <span class="free-delivery-note">
+            Add ₹{{ formatCurrency(1000 - totalAmount) }} more for FREE delivery
+          </span>
+        </div>
+        
+        <div class="summary-divider"></div>
+        
+        <div class="summary-row total">
+          <span>Total:</span>
+          <span>₹{{ formatCurrency(getFinalTotal()) }}</span>
+        </div>
+        
+        <button class="btn-pay-now" (click)="payWithRazorpay()">
+          Proceed to Pay ₹{{ formatCurrency(getFinalTotal()) }}
+        </button>
+        
+        <div class="security-note">
+          <i class="fas fa-lock"></i>
+          <span>Your payment is secured with Razorpay</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
