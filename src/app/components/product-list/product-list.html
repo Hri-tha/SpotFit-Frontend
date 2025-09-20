@@ -7,13 +7,13 @@
     <span></span>
   </div>
 
-<!-- Mobile logo (visible only on mobile) -->
-<div class="mobile-nav-logo mobile-only" (click)="goHome()">
-  <span style="font-size:16px;font-weight:700;letter-spacing:0.5px;
-               font-family:Poppins,Arial,sans-serif;color:#222;">
-    Spot<span style="color:#c1121f;">Fit</span>
-  </span>
-</div>
+  <!-- Mobile logo (visible only on mobile) -->
+  <div class="mobile-nav-logo mobile-only" (click)="goHome()">
+    <span style="font-size:16px;font-weight:700;letter-spacing:0.5px;
+                 font-family:Poppins,Arial,sans-serif;color:#222;">
+      Spot<span style="color:#c1121f;">Fit</span>
+    </span>
+  </div>
 
   <!-- Desktop logo (hidden on mobile) -->
   <div class="logo desktop-only" (click)="goHome()">
@@ -56,19 +56,19 @@
   </div>
   
   <ul>
-    <li (click)="filterByType('Lower'); toggleMenu()"><i class="fas fa-tshirt"></i> Lower</li>
-    <li (click)="filterByType('Sando'); toggleMenu()"><i class="fas fa-vest"></i> Sando</li>
-    <li (click)="filterByType('T-Shirt'); toggleMenu()"><i class="fas fa-tshirt"></i> T-Shirt</li>
-    <li (click)="filterByType('Nikker'); toggleMenu()"><i class="fas fa-shoe-prints"></i> Nikker</li>
-    <li (click)="filterByType('New Arrivals'); toggleMenu()"><i class="fas fa-star"></i> New Arrivals</li>
-    <li (click)="resetFilter(); toggleMenu()"><i class="fas fa-boxes"></i> All Products</li>
-    <li (click)="goLogin(); toggleMenu()"><i class="fas fa-user"></i> Login</li>
-    <li (click)="goToCart(); toggleMenu()"><i class="fas fa-shopping-cart"></i> Cart ({{ cartCount }})</li>
+    <li (click)="filterByTypeAndClose('Lower')"><i class="fas fa-tshirt"></i> Lower</li>
+    <li (click)="filterByTypeAndClose('Sando')"><i class="fas fa-vest"></i> Sando</li>
+    <li (click)="filterByTypeAndClose('T-Shirt')"><i class="fas fa-tshirt"></i> T-Shirt</li>
+    <li (click)="filterByTypeAndClose('Nikker')"><i class="fas fa-shoe-prints"></i> Nikker</li>
+    <li (click)="filterByTypeAndClose('New Arrivals')"><i class="fas fa-star"></i> New Arrivals</li>
+    <li (click)="resetFilterAndClose()"><i class="fas fa-boxes"></i> All Products</li>
+    <li (click)="goLoginAndClose()"><i class="fas fa-user"></i> Login</li>
+    <li (click)="goToCartAndClose()"><i class="fas fa-shopping-cart"></i> Cart ({{ cartCount }})</li>
   </ul>
 </div>
 
 <!-- Overlay for when menu is open -->
-<div class="overlay" [class.active]="menuOpen" (click)="toggleMenu()"></div>
+<div class="overlay" [class.active]="menuOpen" (click)="closeMenu()"></div>
 
 <!-- ✅ Featured Hero Banner -->
 <div *ngIf="featuredProduct" class="hero-banner">

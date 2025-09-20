@@ -79,12 +79,12 @@ export class ProductListComponent implements OnInit {
   goHome() {
     this.resetFilter();
     this.router.navigate(['/']);
-    this.menuOpen = false; // Close menu
+    this.closeMenu(); // Close menu
   }
 
   goLogin() {
     this.router.navigate(['/login']);
-    this.menuOpen = false; // Close menu
+    this.closeMenu(); // Close menu
   }
 
   getDiscountedPrice(p: Product): number {
@@ -132,6 +132,33 @@ export class ProductListComponent implements OnInit {
     }
   }
 
+  filterByTypeAndClose(type: string) {
+  this.filterByType(type);
+  this.closeMenu();
+}
+
+// New method to reset filter and close menu
+resetFilterAndClose() {
+  this.resetFilter();
+  this.closeMenu();
+}
+
+// New method to navigate to login and close menu
+goLoginAndClose() {
+  this.goLogin();
+  this.closeMenu();
+}
+
+// New method to navigate to cart and close menu
+goToCartAndClose() {
+  this.goToCart();
+  this.closeMenu();
+}
+
+closeMenu() {
+  this.menuOpen = false;
+}
+
   getCartQuantity(product: Product): number {
     const item = this.cartService
       .getCartItems()
@@ -141,7 +168,7 @@ export class ProductListComponent implements OnInit {
 
   goToCart() {
    this.router.navigate(['/checkout']);
-  this.menuOpen = false;
+  this.closeMenu();
   }
 
   toggleMenu() {
