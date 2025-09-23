@@ -171,6 +171,24 @@ closeMenu() {
   this.closeMenu();
   }
 
+  // Add this method to your ProductListComponent class
+handleBuyNow() {
+  if (this.cartCount > 0) {
+    // If items are in cart, navigate to checkout
+    this.router.navigate(['/checkout']);
+  } else {
+    // If cart is empty, scroll to products section
+    const productsSection = document.querySelector('.product-container');
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      // Fallback if product container not found
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+  }
+  this.closeMenu();
+}
+
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
   }

@@ -30,14 +30,11 @@
     <li (click)="filterByType('New Arrivals')">New Arrivals</li>
     <li (click)="resetFilter()">All</li>
   </ul>
-
+<button class="btn-buy-now " (click)="handleBuyNow()">
+      Buy Now
+    </button>
   <div class="nav-icons">
-    <i class="fa fa-user desktop-only" (click)="goLogin()"></i>
-    <i class="fa fa-search desktop-only"></i>
-
-    <!-- Mobile search icon -->
-    <i class="fa fa-search mobile-only mobile-search-icon"></i>
-
+   
     <!-- 🛒 Cart with Badge -->
     <div class="cart-icon" (click)="goToCart()">
       <img src="CartImage.jpg" alt="Cart" class="cart-img" />

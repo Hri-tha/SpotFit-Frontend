@@ -433,6 +433,22 @@ body {
   }
 }
 
+.btn-buy-now {
+  background-color: #c1121f;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-right: 10px;
+}
+
+.btn-buy-now:hover {
+  background-color: #a50e1a;
+}
+
 .quantity-controls {
   display: flex;
   align-items: center;
