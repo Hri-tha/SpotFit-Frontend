@@ -1,4 +1,3 @@
-// add-product.component.ts - UPDATED
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +8,7 @@ import { ProductService } from '../../../services/product.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './add-product.html',
-  styleUrls: ['./add-product.scss']
+  styleUrls: ['./add-product.scss'],
 })
 export class AddProductComponent {
   constructor(private productService: ProductService) {}
@@ -19,11 +18,11 @@ export class AddProductComponent {
     description: '',
     price: undefined as number | undefined,
     imageUrl: '',
-    images: [] as string[], // ✅ NEW: Multiple images
+    images: [] as string[],
     features: [] as string[],
     featured: false,
-    heroBanner: false, // ✅ NEW: Hero banner flag
-    bannerOrder: 0, // ✅ NEW: Banner order
+    heroBanner: false,
+    bannerOrder: 0,
     quantity: 0,
     sizes: [] as string[],
     discount: 0,
@@ -32,8 +31,12 @@ export class AddProductComponent {
 
   newFeature: string = '';
   newSize: string = '';
-  files: File[] = []; // ✅ NEW: Multiple files
-  imagePreviews: string[] = []; // ✅ NEW: Image previews
+  files: File[] = [];
+  imagePreviews: string[] = [];
+  isSubmitting: boolean = false;
+  isDragging: boolean = false;
+  showImageModal: boolean = false;
+  selectedImage: string = '';
 
   // Features
   addFeature() {
@@ -42,6 +45,7 @@ export class AddProductComponent {
       this.newFeature = '';
     }
   }
+
   removeFeature(i: number) {
     this.product.features.splice(i, 1);
   }
@@ -53,35 +57,92 @@ export class AddProductComponent {
       this.newSize = '';
     }
   }
+
   removeSize(i: number) {
     this.product.sizes.splice(i, 1);
   }
 
-  // ✅ NEW: Handle multiple file selection
+  // File Handling
   onFileSelected(event: any) {
     const selectedFiles = event.target.files;
     if (selectedFiles) {
-      for (let i = 0; i < selectedFiles.length; i++) {
-        this.files.push(selectedFiles[i]);
-        
-        // Create preview
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-          this.imagePreviews.push(e.target.result);
-        };
-        reader.readAsDataURL(selectedFiles[i]);
-      }
+      this.processFiles(selectedFiles);
     }
   }
 
-  // ✅ NEW: Remove image
+  onFileDrop(event: DragEvent) {
+    event.preventDefault();
+    this.isDragging = false;
+    
+    const files = event.dataTransfer?.files;
+    if (files) {
+      this.processFiles(files);
+    }
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    this.isDragging = true;
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    this.isDragging = false;
+  }
+
+  private processFiles(fileList: FileList) {
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i];
+      
+      // Check file type and size (5MB max)
+      if (!file.type.startsWith('image/')) {
+        alert('Please select only image files');
+        continue;
+      }
+      
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB');
+        continue;
+      }
+
+      this.files.push(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.imagePreviews.push(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   removeImage(index: number) {
     this.files.splice(index, 1);
     this.imagePreviews.splice(index, 1);
   }
 
+  viewImage(image: string) {
+    this.selectedImage = image;
+    this.showImageModal = true;
+  }
+
+  closeModal() {
+    this.showImageModal = false;
+    this.selectedImage = '';
+  }
+
+  getFileSize(index: number): string {
+    const file = this.files[index];
+    if (!file) return '0 KB';
+    
+    const sizeInKB = Math.round(file.size / 1024);
+    return sizeInKB < 1024 ? `${sizeInKB} KB` : `${(sizeInKB / 1024).toFixed(1)} MB`;
+  }
+
   // Submit
   onSubmit() {
+    this.isSubmitting = true;
+    
     const productToSubmit = { 
       ...this.product, 
       price: this.product.price ?? 0,
@@ -92,17 +153,18 @@ export class AddProductComponent {
 
     this.productService.add(productToSubmit, this.files.length > 0 ? this.files : undefined).subscribe({
       next: (res) => {
+        this.isSubmitting = false;
         alert(`✅ ${res.title} added successfully!`);
         this.resetForm();
       },
       error: (err) => {
+        this.isSubmitting = false;
         console.error(err);
         alert('❌ Failed to add product');
       }
     });
   }
 
-  // ✅ NEW: Reset form
   resetForm() {
     this.product = { 
       title: '', description: '', price: undefined, imageUrl: '', 

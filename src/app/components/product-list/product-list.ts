@@ -24,6 +24,12 @@ export class ProductListComponent implements OnInit {
   bannerInterval: any; 
   cartCount: number = 0;
   menuOpen: boolean = false;
+  showSizeModal: boolean = false;
+  showSizeGuide: boolean = false;
+  selectedProduct: Product | null = null;
+  selectedSize: string = '';
+  isBuyNowMode: boolean = false;
+  sizeError: string = '';
 
   private seoService = inject(SeoService);
 
@@ -36,12 +42,7 @@ export class ProductListComponent implements OnInit {
   ngOnInit() {
     this.seoService.setDefaultSeo();
     this.loadHeroBanners();
-    this.svc.getAll().subscribe((data) => {
-      this.products = data;
-      this.allProducts = data;
-      this.featuredProduct = this.products.find((p) => p.featured);
-      this.normalProducts = this.products.filter((p) => !p.featured);
-    });
+    this.loadProducts();
 
     // 🔔 Subscribe to cart changes
     this.cartService.cart$.subscribe((items) => {
@@ -49,7 +50,7 @@ export class ProductListComponent implements OnInit {
     });
   }
 
-   loadHeroBanners() {
+  loadHeroBanners() {
     this.svc.getHeroBanners().subscribe((banners) => {
       this.heroBanners = banners;
       this.startBannerRotation();
@@ -70,11 +71,87 @@ export class ProductListComponent implements OnInit {
     }
   }
 
+  // ✅ Open Size Modal - FIXED
+  openSizeModal(product: Product, isBuyNow: boolean = false) {
+    console.log('Opening size modal for product:', product);
+    
+    if (!product) {
+      console.error('No product provided to size modal');
+      return;
+    }
+
+    this.selectedProduct = product; // Use the actual product reference
+    this.isBuyNowMode = isBuyNow;
+    this.selectedSize = '';
+    this.sizeError = '';
+    this.showSizeModal = true;
+    
+    console.log('Modal product data:', this.selectedProduct);
+    console.log('Product image URL:', this.getProductImage(this.selectedProduct));
+  }
+
+  closeSizeModal() {
+    this.showSizeModal = false;
+    this.selectedProduct = null;
+    this.selectedSize = '';
+    this.sizeError = '';
+  }
+
+  // ✅ Select Size
+  selectSize(size: string) {
+    if (this.isSizeOutOfStock(size)) {
+      return;
+    }
+    this.selectedSize = size;
+    this.sizeError = '';
+  }
+
+  isSizeOutOfStock(size: string): boolean {
+    if (!this.selectedProduct) return true;
+    return this.selectedProduct.quantity === 0;
+  }
+
+  confirmSizeSelection() {
+    if (!this.selectedSize && this.selectedProduct?.sizes && this.selectedProduct.sizes.length > 0) {
+      this.sizeError = 'Please select a size';
+      return;
+    }
+
+    if (this.selectedProduct) {
+      if (this.isBuyNowMode) {
+        this.buyNowWithSize(this.selectedProduct, this.selectedSize);
+      } else {
+        this.addToCartWithSize(this.selectedProduct, this.selectedSize);
+      }
+    }
+
+    this.closeSizeModal();
+  }
+
+  addToCartWithSize(product: Product, size: string) {
+    this.cartService.addToCart(product, size);
+  }
+
+  // ✅ Buy Now with Selected Size
+  buyNowWithSize(product: Product, size: string) {
+    this.cartService.buyNow(product, size);
+    this.router.navigate(['/checkout']);
+  }
+
+  openSizeGuide() {
+    this.showSizeGuide = true;
+  }
+
+  // ✅ Close Size Guide
+  closeSizeGuide() {
+    this.showSizeGuide = false;
+  }
+
   goToBanner(index: number) {
     this.currentBannerIndex = index;
   }
 
-   loadProducts() {
+  loadProducts() {
     this.svc.getAll().subscribe((data) => {
       this.products = data;
       this.allProducts = data;
@@ -89,14 +166,17 @@ export class ProductListComponent implements OnInit {
 
   currentImageIndex: { [productId: string]: number } = {};
 
+  // ✅ FIXED: Get product image method
   getProductImage(product: Product, index: number = 0): string {
+    if (!product) return 'assets/placeholder-image.jpg';
+    
     // Check if product has multiple images array
     if (product.images && Array.isArray(product.images) && product.images.length > 0) {
       const safeIndex = index % product.images.length;
-      return product.images[safeIndex] || product.imageUrl || '';
+      return product.images[safeIndex] || product.imageUrl || 'assets/placeholder-image.jpg';
     }
     // Fallback to single imageUrl
-    return product.imageUrl || '';
+    return product.imageUrl || 'assets/placeholder-image.jpg';
   }
 
   onProductHover(product: Product) {
@@ -114,7 +194,7 @@ export class ProductListComponent implements OnInit {
     }
   }
 
- onProductLeave(product: Product) {
+  onProductLeave(product: Product) {
     // Stop image cycling when mouse leaves
     const hoverInterval = (product as any).hoverInterval;
     if (hoverInterval) {
@@ -146,7 +226,7 @@ export class ProductListComponent implements OnInit {
     }
   }
 
-   filterByType(type: string) {
+  filterByType(type: string) {
     if (!type) return;
     
     this.normalProducts = this.allProducts.filter(
@@ -177,25 +257,13 @@ export class ProductListComponent implements OnInit {
 
   getDiscountedPrice(p: Product): number {
     return p.discount && p.discount > 0
-      ? Math.round(p.price - (p.price * p.discount) / 100)
+      ? Math.floor(p.price - (p.price * p.discount) / 100)
       : p.price;
   }
 
   // ✅ Ask for size before adding
   selectSizeAndAdd(product: Product) {
-    let selectedSize: string | null = null;
-
-    if (product.sizes && product.sizes.length > 0) {
-      selectedSize = prompt(
-        `Available sizes: ${product.sizes.join(', ')}\nEnter your size:`
-      );
-      if (!selectedSize || !product.sizes.includes(selectedSize)) {
-        alert('Invalid size selected.');
-        return;
-      }
-    }
-
-    this.cartService.addToCart(product, selectedSize || '');
+    this.openSizeModal(product, false);
   }
 
   increaseQuantity(product: Product) {
@@ -206,7 +274,7 @@ export class ProductListComponent implements OnInit {
     if (item) {
       this.cartService.addToCart(product, item.size || '');
     } else {
-      this.selectSizeAndAdd(product);
+      this.openSizeModal(product, false);
     }
   }
 
@@ -221,50 +289,32 @@ export class ProductListComponent implements OnInit {
   }
 
   filterByTypeAndClose(type: string) {
-  this.filterByType(type);
-  this.closeMenu();
-}
-
-// New method to reset filter and close menu
-resetFilterAndClose() {
-  this.resetFilter();
-  this.closeMenu();
-}
-
-// New method to navigate to login and close menu
-goLoginAndClose() {
-  this.goLogin();
-  this.closeMenu();
-}
-
-// New method to navigate to cart and close menu
-goToCartAndClose() {
-  this.goToCart();
-  this.closeMenu();
-}
-
-closeMenu() {
-  this.menuOpen = false;
-}
-buyNow(product: Product) {
-  let selectedSize: string = '';
-  
-  if (product.sizes && product.sizes.length > 0) {
-    selectedSize = prompt(
-      `Available sizes: ${product.sizes.join(', ')}\nEnter your size:`
-    ) || '';
-    
-    if (selectedSize && !product.sizes.includes(selectedSize)) {
-      alert('Invalid size selected.');
-      return;
-    }
+    this.filterByType(type);
+    this.closeMenu();
   }
-   this.cartService.buyNow(product, selectedSize);
-  
-  // Navigate to checkout
-  this.router.navigate(['/checkout']);
-  this.closeMenu()
-}
+
+  resetFilterAndClose() {
+    this.resetFilter();
+    this.closeMenu();
+  }
+
+  goLoginAndClose() {
+    this.goLogin();
+    this.closeMenu();
+  }
+
+  goToCartAndClose() {
+    this.goToCart();
+    this.closeMenu();
+  }
+
+  closeMenu() {
+    this.menuOpen = false;
+  }
+
+  buyNow(product: Product) {
+    this.openSizeModal(product, true);
+  }
 
   getCartQuantity(product: Product): number {
     const item = this.cartService
@@ -274,37 +324,33 @@ buyNow(product: Product) {
   }
 
   goToCart() {
-   this.router.navigate(['/checkout']);
-  this.closeMenu();
+    this.router.navigate(['/checkout']);
+    this.closeMenu();
   }
 
-  // Add this method to your ProductListComponent class
-handleBuyNow() {
-  if (this.cartCount > 0) {
-    // If items are in cart, navigate to checkout
-    this.router.navigate(['/checkout']);
-  } else {
-    // If cart is empty, scroll to products section
+  handleBuyNow() {
+    if (this.cartCount > 0) {
+      this.router.navigate(['/checkout']);
+    } else {
+      const productsSection = document.querySelector('.product-container');
+      if (productsSection) {
+        productsSection.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }
+    }
+    this.closeMenu();
+  }
+
+  handleShopNow() {
     const productsSection = document.querySelector('.product-container');
     if (productsSection) {
       productsSection.scrollIntoView({ behavior: 'smooth' });
     } else {
-      // Fallback if product container not found
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
   }
-  this.closeMenu();
-}
 
-handleShopNow() {
-  const productsSection = document.querySelector('.product-container');
-  if (productsSection) {
-    productsSection.scrollIntoView({ behavior: 'smooth' });
-  } else {
-    // Fallback if product container not found
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-  }
-}
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
   }

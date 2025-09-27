@@ -1,107 +1,266 @@
-<!-- add-product.html - UPDATED -->
 <div class="add-product-container">
   <div class="form-card">
-    <h2 class="form-title">➕ Add New Product</h2>
+    <!-- Header Section -->
+    <div class="form-header">
+      <div class="header-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 5.5V7H9V5.5L3 7V9L9 10.5V12.5L3 14V16L9 17.5V21H15V17.5L21 16V14L15 12.5V10.5L21 9Z"/>
+        </svg>
+      </div>
+      <h2 class="form-title">Add New Product</h2>
+      <p class="form-subtitle">Fill in the details to add a new product to your store</p>
+    </div>
 
     <form (ngSubmit)="onSubmit()" #f="ngForm" class="form-body">
       
-      <!-- Title -->
-      <div class="form-group">
-        <label for="title">Product Title</label>
-        <input type="text" id="title" [(ngModel)]="product.title" name="title" required />
-      </div>
+      <!-- Basic Information Section -->
+      <div class="form-section">
+        <h3 class="section-title">Basic Information</h3>
+        
+        <div class="form-grid">
+          <!-- Title -->
+          <div class="form-group">
+            <label for="title" class="form-label">
+              Product Title
+              <span class="required">*</span>
+            </label>
+            <input type="text" id="title" class="form-input" 
+                   [(ngModel)]="product.title" name="title" required 
+                   placeholder="Enter product title">
+          </div>
 
-      <!-- Description -->
-      <div class="form-group">
-        <label for="description">Description</label>
-        <textarea id="description" [(ngModel)]="product.description" name="description"></textarea>
-      </div>
+          <!-- Price -->
+          <div class="form-group">
+            <label for="price" class="form-label">
+              Price (₹)
+              <span class="required">*</span>
+            </label>
+            <div class="input-with-icon">
+              <span class="input-icon">₹</span>
+              <input type="number" id="price" class="form-input" 
+                     [(ngModel)]="product.price" name="price" required 
+                     placeholder="0.00" min="0" step="0.01">
+            </div>
+          </div>
+        </div>
 
-      <!-- Price -->
-      <div class="form-group">
-        <label for="price">Price (₹)</label>
-        <input type="number" id="price" [(ngModel)]="product.price" name="price" required />
-      </div>
-
-      <!-- ✅ NEW: Hero Banner Options -->
-      <div class="form-group checkbox-group">
-        <label>
-          <input type="checkbox" [(ngModel)]="product.heroBanner" name="heroBanner" />
-          Use as Hero Banner
-        </label>
-      </div>
-
-      <div class="form-group" *ngIf="product.heroBanner">
-        <label for="bannerOrder">Banner Display Order</label>
-        <input type="number" id="bannerOrder" [(ngModel)]="product.bannerOrder" name="bannerOrder" min="0" />
-        <small>Lower numbers display first</small>
-      </div>
-
-      <!-- ✅ NEW: Multiple File Upload -->
-      <div class="form-group">
-        <label for="files">Upload Images (Multiple)</label>
-        <input type="file" id="files" multiple (change)="onFileSelected($event)" accept="image/*" />
-      </div>
-
-      <!-- ✅ NEW: Image Previews -->
-      <div class="image-previews" *ngIf="imagePreviews.length > 0">
-        <div class="image-preview-item" *ngFor="let preview of imagePreviews; let i = index">
-          <img [src]="preview" alt="Preview {{i+1}}" />
-          <button type="button" class="btn-remove" (click)="removeImage(i)">×</button>
+        <!-- Description -->
+        <div class="form-group">
+          <label for="description" class="form-label">Description</label>
+          <textarea id="description" class="form-textarea" 
+                    [(ngModel)]="product.description" name="description"
+                    placeholder="Enter product description" rows="3"></textarea>
         </div>
       </div>
 
-      <!-- Featured -->
-      <div class="form-group checkbox-group">
-        <label>
-          <input type="checkbox" [(ngModel)]="product.featured" name="featured" />
-          Mark as Featured
-        </label>
+      <!-- Product Type & Category -->
+      <div class="form-section">
+        <h3 class="section-title">Product Details</h3>
+        
+        <div class="form-grid">
+          <!-- Product Type -->
+          <div class="form-group">
+            <label for="type" class="form-label">
+              Product Type
+              <span class="required">*</span>
+            </label>
+            <select id="type" class="form-select" 
+                    [(ngModel)]="product.type" name="type" required>
+              <option value="">Select Type</option>
+              <option value="Lower">Lower</option>
+              <option value="Sando">Sando</option>
+              <option value="T-Shirt">T-Shirt</option>
+              <option value="Nikker">Nikker</option>
+              <option value="New Arrivals">New Arrivals</option>
+            </select>
+          </div>
+
+          <!-- Quantity -->
+          <div class="form-group">
+            <label for="quantity" class="form-label">Quantity</label>
+            <input type="number" id="quantity" class="form-input" 
+                   [(ngModel)]="product.quantity" name="quantity" 
+                   placeholder="0" min="0">
+          </div>
+
+          <!-- Discount -->
+          <div class="form-group">
+            <label for="discount" class="form-label">Discount (%)</label>
+            <div class="input-with-icon">
+              <span class="input-icon">%</span>
+              <input type="number" id="discount" class="form-input" 
+                     [(ngModel)]="product.discount" name="discount" 
+                     placeholder="0" min="0" max="100">
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Product Type -->
-      <div class="form-group">
-        <label for="type">Product Type</label>
-        <select id="type" [(ngModel)]="product.type" name="type" required>
-          <option value="">-- Select Type --</option>
-          <option value="Lower">Lower</option>
-          <option value="Sando">Sando</option>
-          <option value="T-Shirt">T-Shirt</option>
-          <option value="Nikker">Nikker</option>
-          <option value="New Arrivals">New Arrivals</option>
-        </select>
+      <!-- Image Upload Section -->
+      <div class="form-section">
+        <h3 class="section-title">Product Images</h3>
+        
+        <!-- File Upload Area -->
+        <div class="upload-area" [class.active]="isDragging" 
+             (drop)="onFileDrop($event)" (dragover)="onDragOver($event)" 
+             (dragleave)="onDragLeave($event)">
+          <div class="upload-content">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" class="upload-icon">
+              <path d="M14,13V17H10V13H7L12,8L17,13M19.35,10.03C18.67,6.59 15.64,4 12,4C9.11,4 6.6,5.64 5.35,8.03C2.34,8.36 0,10.9 0,14A6,6 0 0,0 6,20H19A5,5 0 0,0 24,15C24,12.36 21.95,10.22 19.35,10.03Z"/>
+            </svg>
+            <p class="upload-text">Drag & drop images here or click to browse</p>
+            <p class="upload-subtext">Supports JPG, PNG, WEBP (Max 5MB each)</p>
+            <input type="file" id="files" multiple (change)="onFileSelected($event)" 
+                   accept="image/*" class="file-input">
+            <label for="files" class="browse-button">Browse Files</label>
+          </div>
+        </div>
+
+        <!-- Image Previews -->
+        <div class="image-previews" *ngIf="imagePreviews.length > 0">
+          <h4 class="previews-title">Selected Images ({{ imagePreviews.length }})</h4>
+          <div class="previews-grid">
+            <div class="preview-item" *ngFor="let preview of imagePreviews; let i = index">
+              <div class="preview-image">
+                <img [src]="preview" [alt]="'Preview ' + (i + 1)" />
+                <div class="preview-overlay">
+                  <button type="button" class="preview-action" (click)="viewImage(preview)">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/>
+                    </svg>
+                  </button>
+                  <button type="button" class="preview-action remove" (click)="removeImage(i)">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="preview-info">
+                <span class="preview-name">Image {{ i + 1 }}</span>
+                <span class="preview-size">{{ getFileSize(i) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Quantity -->
-      <div class="form-group">
-        <label for="quantity">Quantity</label>
-        <input type="number" id="quantity" [(ngModel)]="product.quantity" name="quantity" min="0" />
+      <!-- Features Section -->
+      <div class="form-section">
+        <h3 class="section-title">Product Features</h3>
+        
+        <div class="features-input">
+          <div class="input-with-button">
+            <input type="text" class="form-input" 
+                   [(ngModel)]="newFeature" name="newFeature" 
+                   placeholder="Add a feature (e.g., '100% Cotton')">
+            <button type="button" class="add-button" (click)="addFeature()" [disabled]="!newFeature.trim()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="features-list" *ngIf="product.features.length > 0">
+          <div class="feature-chip" *ngFor="let feature of product.features; let i = index">
+            <span class="feature-text">{{ feature }}</span>
+            <button type="button" class="chip-remove" (click)="removeFeature(i)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
 
-      <!-- Discount -->
-      <div class="form-group">
-        <label for="discount">Discount (%)</label>
-        <input type="number" id="discount" [(ngModel)]="product.discount" name="discount" min="0" max="100" />
+      <!-- Sizes Section -->
+      <div class="form-section">
+        <h3 class="section-title">Available Sizes</h3>
+        
+        <div class="sizes-input">
+          <div class="input-with-button">
+            <input type="text" class="form-input" 
+                   [(ngModel)]="newSize" name="newSize" 
+                   placeholder="Add a size (e.g., S, M, L, XL)">
+            <button type="button" class="add-button" (click)="addSize()" [disabled]="!newSize.trim()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="sizes-list" *ngIf="product.sizes.length > 0">
+          <div class="size-chip" *ngFor="let size of product.sizes; let i = index">
+            <span class="size-text">{{ size }}</span>
+            <button type="button" class="chip-remove" (click)="removeSize(i)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
 
-      <!-- Sizes -->
-      <div class="form-group">
-        <label for="size">Add Size</label>
-        <input type="text" id="size" name="newSize" [(ngModel)]="newSize" placeholder="e.g. S, M, L, XL" />
-        <button type="button" (click)="addSize()">Add</button>
+      <!-- Options Section -->
+      <div class="form-section">
+        <h3 class="section-title">Product Options</h3>
+        
+        <div class="options-grid">
+          <label class="option-checkbox">
+            <input type="checkbox" [(ngModel)]="product.featured" name="featured" />
+            <span class="checkmark"></span>
+            <div class="option-content">
+              <span class="option-label">Featured Product</span>
+              <span class="option-description">Show this product in featured section</span>
+            </div>
+          </label>
+
+          <label class="option-checkbox">
+            <input type="checkbox" [(ngModel)]="product.heroBanner" name="heroBanner" />
+            <span class="checkmark"></span>
+            <div class="option-content">
+              <span class="option-label">Hero Banner</span>
+              <span class="option-description">Display in hero banner section</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="form-group" *ngIf="product.heroBanner">
+          <label for="bannerOrder" class="form-label">Banner Display Order</label>
+          <input type="number" id="bannerOrder" class="form-input" 
+                 [(ngModel)]="product.bannerOrder" name="bannerOrder" 
+                 min="0" placeholder="0">
+          <small class="input-help">Lower numbers display first. Set 0 for default order.</small>
+        </div>
       </div>
 
-      <ul class="size-list">
-        <li *ngFor="let size of product.sizes; let i = index">
-          {{ size }}
-          <button type="button" (click)="removeSize(i)">❌</button>
-        </li>
-      </ul>
-
-      <!-- Submit -->
-      <div class="form-footer">
-        <button type="submit" class="btn-submit" [disabled]="!f.valid">Add Product</button>
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="resetForm()">
+          Reset Form
+        </button>
+        <button type="submit" class="btn-primary" [disabled]="!f.valid || isSubmitting">
+          <span *ngIf="!isSubmitting">Add Product</span>
+          <span *ngIf="isSubmitting" class="loading-spinner">
+            <span class="spinner"></span>
+            Adding...
+          </span>
+        </button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Image Modal -->
+<div class="modal" [class.active]="showImageModal">
+  <div class="modal-content">
+    <button type="button" class="modal-close" (click)="closeModal()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+      </svg>
+    </button>
+    <img [src]="selectedImage" alt="Preview" class="modal-image" *ngIf="selectedImage">
   </div>
 </div>

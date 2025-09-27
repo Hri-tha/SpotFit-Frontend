@@ -1,168 +1,690 @@
-.add-product-container {
+// Variables
+$primary-color: #6366f1;
+$primary-dark: #4f46e5;
+$error-color: #ef4444;
+$success-color: #10b981;
+$warning-color: #f59e0b;
+$text-primary: #1f2937;
+$text-secondary: #6b7280;
+$border-color: #d1d5db;
+$bg-light: #f9fafb;
+$bg-white: #ffffff;
+$shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+// Mixins
+@mixin mobile {
+  @media (max-width: 768px) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (max-width: 1024px) {
+    @content;
+  }
+}
+
+@mixin flex-center {
   display: flex;
   justify-content: center;
-  padding: 2rem;
-  background: linear-gradient(135deg, #ece9ff, #fdfbfb);
+  align-items: center;
+}
+
+// Base Styles
+.add-product-container {
   min-height: 100vh;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f0f4ff 0%, #fdfbfb 100%);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+
+  @include mobile {
+    padding: 0.5rem;
+  }
 }
 
 .form-card {
-  background: #ffffff;
-  border-radius: 1.2rem;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  background: $bg-white;
+  border-radius: 1.5rem;
+  box-shadow: $shadow;
+  max-width: 800px;
+  margin: 0 auto;
+  overflow: hidden;
+  
+  @include mobile {
+    border-radius: 1rem;
+    margin: 0.5rem;
+  }
+}
+
+// Header
+.form-header {
+  background: linear-gradient(135deg, $primary-color, $primary-dark);
+  color: white;
   padding: 2rem;
-  max-width: 600px;
-  width: 100%;
-  animation: fadeInUp 0.6s ease-in-out;
-}
+  text-align: center;
 
-.form-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #3f51b5;
-  margin-bottom: 0.3rem;
-}
-
-.subtitle {
-  font-size: 0.95rem;
-  color: #666;
-  margin-bottom: 1.5rem;
-}
-
-.form-body {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-
-  label {
-    font-weight: 600;
-    margin-bottom: 0.4rem;
-    color: #444;
+  @include mobile {
+    padding: 1.5rem 1rem;
   }
 
-  input, textarea {
-    padding: 0.75rem;
-    border-radius: 0.6rem;
-    border: 1.5px solid #ccc;
-    outline: none;
-    transition: 0.3s;
+  .header-icon {
+    @include flex-center;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    backdrop-filter: blur(10px);
 
-    &:focus {
-      border-color: #3f51b5;
-      box-shadow: 0 0 6px rgba(63, 81, 181, 0.3);
+    @include mobile {
+      width: 48px;
+      height: 48px;
+    }
+  }
+
+  .form-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+
+    @include mobile {
+      font-size: 1.5rem;
+    }
+  }
+
+  .form-subtitle {
+    opacity: 0.9;
+    font-size: 1rem;
+
+    @include mobile {
+      font-size: 0.9rem;
     }
   }
 }
 
-/* Features input */
-.features-input {
+// Form Body
+.form-body {
+  padding: 2rem;
+
+  @include mobile {
+    padding: 1.5rem 1rem;
+  }
+}
+
+.form-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: $bg-light;
+  border-radius: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+
+  @include mobile {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: $text-primary;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &::before {
+    content: '';
+    width: 4px;
+    height: 16px;
+    background: $primary-color;
+    border-radius: 2px;
+  }
+}
+
+// Form Grid
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+// Form Elements
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  color: $text-primary;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+
+  .required {
+    color: $error-color;
+  }
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid $border-color;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: $bg-white;
+
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  }
+
+  @include mobile {
+    padding: 0.75rem;
+    font-size: 16px; // Prevent zoom on iOS
+  }
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.input-with-icon {
+  position: relative;
+
+  .input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $text-secondary;
+    font-weight: 600;
+  }
+
+  .form-input {
+    padding-left: 2.5rem;
+  }
+}
+
+.input-help {
+  display: block;
+  margin-top: 0.25rem;
+  color: $text-secondary;
+  font-size: 0.8rem;
+}
+
+// Upload Area
+.upload-area {
+  border: 2px dashed $border-color;
+  border-radius: 1rem;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  background: $bg-white;
+  position: relative;
+
+  &.active {
+    border-color: $primary-color;
+    background: rgba(99, 102, 241, 0.05);
+  }
+
+  @include mobile {
+    padding: 1.5rem;
+  }
+
+  .upload-content {
+    .upload-icon {
+      color: $text-secondary;
+      margin-bottom: 1rem;
+    }
+
+    .upload-text {
+      font-weight: 600;
+      color: $text-primary;
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-subtext {
+      color: $text-secondary;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .file-input {
+    display: none;
+  }
+
+  .browse-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: $primary-color;
+    color: white;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: $primary-dark;
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// Image Previews
+.image-previews {
+  margin-top: 1.5rem;
+
+  .previews-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: $text-primary;
+  }
+
+  .previews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1rem;
+
+    @include mobile {
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 0.75rem;
+    }
+  }
+
+  .preview-item {
+    background: $bg-white;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .preview-image {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .preview-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      @include flex-center;
+      gap: 0.5rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    .preview-action {
+      @include flex-center;
+      width: 36px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      border-radius: 50%;
+      color: $text-primary;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &.remove {
+        color: $error-color;
+      }
+
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  .preview-info {
+    padding: 0.75rem;
+    text-align: center;
+  }
+
+  .preview-name {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: $text-primary;
+  }
+
+  .preview-size {
+    display: block;
+    font-size: 0.7rem;
+    color: $text-secondary;
+  }
+}
+
+// Features & Sizes
+.features-input,
+.sizes-input {
+  margin-bottom: 1rem;
+}
+
+.input-with-button {
   display: flex;
   gap: 0.5rem;
 
-  input {
+  .form-input {
     flex: 1;
   }
 
-  .btn-add {
-    background: #4caf50;
+  .add-button {
+    @include flex-center;
+    width: 48px;
+    height: 48px;
+    background: $primary-color;
     border: none;
-    border-radius: 0.6rem;
-    padding: 0.6rem 1.2rem;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
-
-    &:hover {
-      background: #43a047;
-      transform: translateY(-2px);
-    }
-  }
-}
-
-/* Feature chips */
-.feature-chips {
-  margin-top: 0.6rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-
-  .chip {
-    background: #e0e7ff;
-    color: #3f51b5;
-    padding: 0.4rem 0.8rem;
-    border-radius: 1rem;
-    font-size: 0.9rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-
-    button {
-      border: none;
-      background: transparent;
-      font-size: 0.9rem;
-      cursor: pointer;
-      color: #e53935;
-      font-weight: bold;
-    }
-  }
-}
-
-/* Image Preview */
-.image-preview {
-  margin-top: 1rem;
-  text-align: center;
-
-  img {
-    max-width: 100%;
-    max-height: 250px;
-    border-radius: 0.8rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    object-fit: cover;
-  }
-}
-
-/* Submit button */
-.form-footer {
-  margin-top: 1rem;
-  text-align: right;
-
-  .btn-submit {
-    background: #3f51b5;
-    border: none;
-    border-radius: 0.6rem;
-    padding: 0.7rem 1.5rem;
-    font-size: 1rem;
-    font-weight: 600;
+    border-radius: 0.75rem;
     color: white;
     cursor: pointer;
-    transition: 0.3s;
+    transition: all 0.3s ease;
 
-    &:hover {
-      background: #303f9f;
+    &:hover:not(:disabled) {
+      background: $primary-dark;
       transform: scale(1.05);
     }
 
     &:disabled {
-      background: #ccc;
+      opacity: 0.5;
       cursor: not-allowed;
     }
   }
 }
 
-/* Animation */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+.features-list,
+.sizes-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.feature-chip,
+.size-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(99, 102, 241, 0.1);
+  color: $primary-color;
+  padding: 0.5rem 0.75rem;
+  border-radius: 2rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.chip-remove {
+  @include flex-center;
+  width: 20px;
+  height: 20px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.1);
   }
-  to {
+}
+
+// Options
+.options-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.option-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: $bg-white;
+  border-radius: 0.75rem;
+  border: 2px solid $border-color;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: $primary-color;
+  }
+
+  input {
+    display: none;
+
+    &:checked + .checkmark {
+      background: $primary-color;
+      border-color: $primary-color;
+
+      &::after {
+        opacity: 1;
+      }
+    }
+  }
+
+  .checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid $border-color;
+    border-radius: 4px;
+    position: relative;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 2px;
+      width: 6px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+      opacity: 0;
+    }
+  }
+
+  .option-content {
+    flex: 1;
+  }
+
+  .option-label {
+    display: block;
+    font-weight: 600;
+    color: $text-primary;
+    margin-bottom: 0.25rem;
+  }
+
+  .option-description {
+    display: block;
+    font-size: 0.8rem;
+    color: $text-secondary;
+  }
+}
+
+// Form Actions
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid $border-color;
+
+  @include mobile {
+    flex-direction: column-reverse;
+  }
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 140px;
+
+  @include mobile {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+  }
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, $primary-color, $primary-dark);
+  color: white;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.btn-secondary {
+  background: $bg-light;
+  color: $text-primary;
+  border: 2px solid $border-color;
+
+  &:hover {
+    background: $border-color;
+  }
+}
+
+// Loading Spinner
+.loading-spinner {
+  @include flex-center;
+  gap: 0.5rem;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Modal
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  @include flex-center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+
+  &.active {
     opacity: 1;
-    transform: translateY(0);
+    visibility: visible;
+  }
+}
+
+.modal-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  background: $bg-white;
+  border-radius: 1rem;
+  padding: 2rem;
+
+  @include mobile {
+    max-width: 95vw;
+    max-height: 95vh;
+    padding: 1rem;
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  @include flex-center;
+  color: white;
+  cursor: pointer;
+  z-index: 1;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.7);
+  }
+}
+
+.modal-image {
+  max-width: 100%;
+  max-height: calc(90vh - 4rem);
+  object-fit: contain;
+
+  @include mobile {
+    max-height: calc(95vh - 2rem);
+  }
+}
+
+// Responsive Improvements
+@media (max-width: 480px) {
+  .form-body {
+    padding: 1rem 0.5rem;
+  }
+
+  .form-section {
+    padding: 0.75rem;
+  }
+
+  .upload-area {
+    padding: 1rem;
   }
 }

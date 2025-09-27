@@ -31,11 +31,12 @@
     <li (click)="filterByType('New Arrivals')">New Arrivals</li>
     <li (click)="resetFilter()">All</li>
   </ul>
-<button class="btn-buy-now " (click)="handleBuyNow()">
-      Buy Now
-</button>
+
+  <button class="btn-buy-now" (click)="handleBuyNow()">
+    Buy Now
+  </button>
+
   <div class="nav-icons">
-   
     <!-- 🛒 Cart with Badge -->
     <div class="cart-icon" (click)="goToCart()">
       <img src="CartImage.jpg" alt="Cart" class="cart-img" />
@@ -68,6 +69,143 @@
 <!-- Overlay for when menu is open -->
 <div class="overlay" [class.active]="menuOpen" (click)="closeMenu()"></div>
 
+<!-- ✅ Size Selection Modal - FIXED -->
+<div class="size-modal-overlay" [class.active]="showSizeModal" (click)="closeSizeModal()">
+  <div class="size-modal" *ngIf="selectedProduct" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Select Size</h3>
+      <button class="modal-close" (click)="closeSizeModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="product-preview">
+        <img [src]="getProductImage(selectedProduct)" 
+             [alt]="selectedProduct.title" 
+             onerror="this.src='assets/placeholder-image.jpg'"/>
+        <div class="product-info">
+          <h4>{{ selectedProduct.title || 'Product' }}</h4>
+          <div class="price">
+            <span class="current-price">₹{{ getDiscountedPrice(selectedProduct) }}</span>
+            <span *ngIf="selectedProduct.discount && selectedProduct.discount > 0" class="original-price">
+              ₹{{ selectedProduct.price }}
+            </span>
+            <span *ngIf="selectedProduct.discount && selectedProduct.discount > 0" class="discount">
+              {{ selectedProduct.discount }}% OFF
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="size-selection">
+        <div class="size-header">
+          <span class="size-label">SELECT SIZE</span>
+          <span class="size-guide" (click)="openSizeGuide()">Size Guide</span>
+        </div>
+        
+        <div class="size-grid" *ngIf="selectedProduct.sizes && selectedProduct.sizes.length > 0; else noSizes">
+          <button *ngFor="let size of selectedProduct.sizes" 
+                  class="size-option"
+                  [class.selected]="selectedSize === size"
+                  [class.out-of-stock]="isSizeOutOfStock(size)"
+                  (click)="selectSize(size)"
+                  [disabled]="isSizeOutOfStock(size)">
+            <span class="size-text">{{ size }}</span>
+            <span *ngIf="isSizeOutOfStock(size)" class="stock-status">Out of Stock</span>
+          </button>
+        </div>
+        
+        <ng-template #noSizes>
+          <div class="no-sizes-message">
+            <p>This product doesn't require size selection.</p>
+          </div>
+        </ng-template>
+        
+        <div *ngIf="sizeError" class="error-message">
+          {{ sizeError }}
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="closeSizeModal()">Cancel</button>
+      <button class="btn-primary" 
+              [disabled]="(selectedProduct.sizes && selectedProduct.sizes.length > 0 && !selectedSize) || isSizeOutOfStock(selectedSize)"
+              (click)="confirmSizeSelection()">
+        {{ isBuyNowMode ? 'Buy Now' : 'Add to Cart' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Size Guide Modal -->
+<div class="size-guide-modal" [class.active]="showSizeGuide" (click)="closeSizeGuide()">
+  <div class="size-guide-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Size Guide</h3>
+      <button class="modal-close" (click)="closeSizeGuide()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="size-guide-body">
+      <div class="guide-section">
+        <h4>How to choose your size:</h4>
+        <ul>
+          <li>Measure your chest/bust and waist</li>
+          <li>Compare with our size chart</li>
+          <li>If between sizes, choose the larger size</li>
+        </ul>
+      </div>
+      
+      <div class="size-chart">
+        <h4>Size Chart (in inches)</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Size</th>
+              <th>Chest</th>
+              <th>Waist</th>
+              <th>Fit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>S</td>
+              <td>34-36</td>
+              <td>28-30</td>
+              <td>Regular</td>
+            </tr>
+            <tr>
+              <td>M</td>
+              <td>38-40</td>
+              <td>32-34</td>
+              <td>Regular</td>
+            </tr>
+            <tr>
+              <td>L</td>
+              <td>42-44</td>
+              <td>36-38</td>
+              <td>Regular</td>
+            </tr>
+            <tr>
+              <td>XL</td>
+              <td>46-48</td>
+              <td>40-42</td>
+              <td>Regular</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ✅ Dynamic Hero Banner -->
 <div *ngIf="heroBanners.length > 0" class="hero-banner-container">
   <div class="hero-banner" 
@@ -81,7 +219,7 @@
     <div class="hero-text">
       <h1>{{ banner.title }}</h1>
       <p>{{ banner.description }}</p>
-      <button class="btn-shop"  (click)="handleShopNow()">Shop Now</button>
+      <button class="btn-shop" (click)="handleShopNow()">Shop Now</button>
     </div>
   </div>
 
@@ -105,7 +243,7 @@
   </div>
 </div>
 
-<!-- ✅ Product Grid -->
+<!-- ✅ Product Grid (updated buttons) -->
 <div class="product-container">
   <div class="product-card" 
        *ngFor="let p of normalProducts"
@@ -113,12 +251,9 @@
        (mouseleave)="onProductLeave(p)">
     
     <div class="image-wrapper">
-      <!-- Fix: Safe image access -->
       <img [src]="getProductImage(p, p._id ? (currentImageIndex[p._id] || 0) : 0)" 
-           [alt]="p.title" 
-           [title]="p.images && p.images.length > 1 ? 'Hover to see more images' : ''" />
+           [alt]="p.title" />
       
-      <!-- Fix: Remove Array.isArray check since we know it's an array from the interface -->
       <div class="image-count" *ngIf="p.images && p.images.length > 1">
         {{ (p._id ? (currentImageIndex[p._id] || 0) : 0) + 1 }}/{{ p.images.length }}
       </div>
@@ -138,10 +273,13 @@
         <span class="new-price">₹{{ p.price }}</span>
       </ng-template>
 
-      <!-- ✅ Sizes -->
-      <div class="sizes" *ngIf="p.sizes && p.sizes.length > 0">
-        <strong>Sizes:</strong>
-        <span *ngFor="let size of p.sizes" class="size-chip">{{ size }}</span>
+      <!-- ✅ Sizes Preview -->
+      <div class="sizes-preview" *ngIf="p.sizes && p.sizes.length > 0">
+        <strong>Available Sizes:</strong>
+        <div class="size-chips">
+          <span *ngFor="let size of p.sizes.slice(0, 3)" class="size-chip">{{ size }}</span>
+          <span *ngIf="p.sizes.length > 3" class="more-sizes">+{{ p.sizes.length - 3 }} more</span>
+        </div>
       </div>
 
       <!-- ✅ Add to Cart -->
@@ -157,7 +295,7 @@
         <ng-template #addToCartBtn>
           <button class="btn-add" 
                   [disabled]="p.quantity === 0" 
-                  (click)="selectSizeAndAdd(p)">
+                  (click)="openSizeModal(p, false)">
             {{ p.quantity === 0 ? "Out of Stock" : "Add to Cart" }}
           </button>
         </ng-template>
@@ -165,7 +303,7 @@
 
       <!-- ✅ Buy Now Button -->
       <button class="btn-buy-now" 
-              (click)="buyNow(p)"
+              (click)="openSizeModal(p, true)"
               [disabled]="p.quantity === 0">
         Buy Now
       </button>

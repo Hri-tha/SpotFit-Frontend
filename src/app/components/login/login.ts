@@ -6,29 +6,23 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
-   standalone: true,
+  standalone: true,
   imports: [CommonModule, FormsModule],
-  template: `
-  <div class="container mt-4" style="max-width:400px">
-    <h3>Login</h3>
-    <form (submit)="onSubmit()">
-      <div class="mb-2">
-        <input class="form-control" placeholder="Email" [(ngModel)]="email" name="email"/>
-      </div>
-      <div class="mb-2">
-        <input class="form-control" placeholder="Password" type="password" [(ngModel)]="password" name="password"/>
-      </div>
-      <button class="btn btn-primary">Login</button>
-    </form>
-  </div>`
+  templateUrl: './login.html',
+  styleUrls: ['./login.scss']
 })
 export class LoginComponent {
   email = '';
   password = '';
+  isLoading = false;
+
   constructor(private auth: AuthService, private router: Router) {}
+
   onSubmit() {
+    this.isLoading = true;
     this.auth.login(this.email, this.password).subscribe({
       next: () => {
+        this.isLoading = false;
         const user = this.auth.currentUser$.value;
         if (user?.role === 'admin') {
           this.router.navigate(['/admin']);
@@ -36,7 +30,10 @@ export class LoginComponent {
           this.router.navigate(['/']);
         }
       },
-      error: err => alert(err.error?.message || 'Login failed')
+      error: err => {
+        this.isLoading = false;
+        alert(err.error?.message || 'Login failed');
+      }
     });
   }
 }
