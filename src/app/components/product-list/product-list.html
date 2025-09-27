@@ -1,3 +1,4 @@
+<!-- product-list.html - FIXED -->
 <!-- ✅ Navbar -->
 <nav class="navbar">
   <!-- Left hamburger menu -->
@@ -32,7 +33,7 @@
   </ul>
 <button class="btn-buy-now " (click)="handleBuyNow()">
       Buy Now
-    </button>
+</button>
   <div class="nav-icons">
    
     <!-- 🛒 Cart with Badge -->
@@ -67,21 +68,60 @@
 <!-- Overlay for when menu is open -->
 <div class="overlay" [class.active]="menuOpen" (click)="closeMenu()"></div>
 
-<!-- ✅ Featured Hero Banner -->
-<div *ngIf="featuredProduct" class="hero-banner">
+<!-- ✅ Dynamic Hero Banner -->
+<div *ngIf="heroBanners.length > 0" class="hero-banner-container">
+  <div class="hero-banner" 
+       *ngFor="let banner of heroBanners; let i = index"
+       [class.active]="i === currentBannerIndex">
+    
+    <div class="image-wrapper">
+      <img [src]="getProductImage(banner)" [alt]="banner.title" />
+    </div>
+    
+    <div class="hero-text">
+      <h1>{{ banner.title }}</h1>
+      <p>{{ banner.description }}</p>
+      <button class="btn-shop"  (click)="handleShopNow()">Shop Now</button>
+    </div>
+  </div>
+
+  <!-- ✅ Banner Navigation Dots -->
+  <div class="banner-dots" *ngIf="heroBanners.length > 1">
+    <span *ngFor="let banner of heroBanners; let i = index"
+          [class.active]="i === currentBannerIndex"
+          (click)="goToBanner(i)"
+          class="banner-dot">
+    </span>
+  </div>
+</div>
+
+<!-- ✅ Fallback Featured Banner -->
+<div *ngIf="heroBanners.length === 0 && featuredProduct" class="hero-banner">
   <img [src]="featuredProduct.imageUrl" alt="{{featuredProduct.title}}" />
   <div class="hero-text">
     <h1>{{ featuredProduct.title }}</h1>
     <p>{{ featuredProduct.description }}</p>
-    <button class="btn-shop">Shop Now</button>
+    <button class="btn-shop" (click)="handleShopNow()">Shop Now</button>
   </div>
 </div>
 
 <!-- ✅ Product Grid -->
 <div class="product-container">
-  <div class="product-card" *ngFor="let p of normalProducts">
+  <div class="product-card" 
+       *ngFor="let p of normalProducts"
+       (mouseenter)="onProductHover(p)"
+       (mouseleave)="onProductLeave(p)">
+    
     <div class="image-wrapper">
-      <img *ngIf="p.imageUrl" [src]="p.imageUrl" alt="{{p.title}}" />
+      <!-- Fix: Safe image access -->
+      <img [src]="getProductImage(p, p._id ? (currentImageIndex[p._id] || 0) : 0)" 
+           [alt]="p.title" 
+           [title]="p.images && p.images.length > 1 ? 'Hover to see more images' : ''" />
+      
+      <!-- Fix: Remove Array.isArray check since we know it's an array from the interface -->
+      <div class="image-count" *ngIf="p.images && p.images.length > 1">
+        {{ (p._id ? (currentImageIndex[p._id] || 0) : 0) + 1 }}/{{ p.images.length }}
+      </div>
     </div>
 
     <div class="product-info">
@@ -89,10 +129,7 @@
       <p class="description">{{ p.description }}</p>
 
       <!-- ✅ Price -->
-      <div
-        class="price-section"
-        *ngIf="p.discount && p.discount > 0; else noDiscount"
-      >
+      <div class="price-section" *ngIf="p.discount && p.discount > 0; else noDiscount">
         <span class="old-price">₹{{ p.price }}</span>
         <span class="new-price">₹{{ getDiscountedPrice(p) }}</span>
         <span class="discount-tag">-{{ p.discount }}%</span>
@@ -101,13 +138,13 @@
         <span class="new-price">₹{{ p.price }}</span>
       </ng-template>
 
-      <!-- ✅ Sizes (visible on page) -->
+      <!-- ✅ Sizes -->
       <div class="sizes" *ngIf="p.sizes && p.sizes.length > 0">
         <strong>Sizes:</strong>
         <span *ngFor="let size of p.sizes" class="size-chip">{{ size }}</span>
       </div>
 
-      <!-- ✅ Add to Cart OR Quantity Controls -->
+      <!-- ✅ Add to Cart -->
       <div class="price-add">
         <ng-container *ngIf="getCartQuantity(p) > 0; else addToCartBtn">
           <div class="quantity-controls">
@@ -118,15 +155,20 @@
         </ng-container>
 
         <ng-template #addToCartBtn>
-          <button
-            class="btn-add"
-            [disabled]="p.quantity === 0"
-            (click)="selectSizeAndAdd(p)"
-          >
+          <button class="btn-add" 
+                  [disabled]="p.quantity === 0" 
+                  (click)="selectSizeAndAdd(p)">
             {{ p.quantity === 0 ? "Out of Stock" : "Add to Cart" }}
           </button>
         </ng-template>
       </div>
+
+      <!-- ✅ Buy Now Button -->
+      <button class="btn-buy-now" 
+              (click)="buyNow(p)"
+              [disabled]="p.quantity === 0">
+        Buy Now
+      </button>
     </div>
   </div>
 </div>

@@ -1,16 +1,16 @@
 // src/app/components/checkout/checkout.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
-
 import { CartService } from '../../services/cart.service';
 import { AddressService } from '../../services/address.service';
 import { ConfigService } from '../../services/config.service';
 import { AddressDialogComponent } from '../address-dialog/address-dialog';
 import { Address } from '../../models/address.model';
 import { environment } from '../../../environments/environment';
+import { SeoService } from '../../services/seo.service';
 
 declare var Razorpay: any;
 
@@ -28,6 +28,7 @@ export class CheckoutComponent implements OnInit {
   addresses: Address[] = [];
   isLoading: boolean = false;
   configLoaded: boolean = false;
+  private seoService = inject(SeoService);
 
   constructor(
     private cartService: CartService,
@@ -41,7 +42,11 @@ export class CheckoutComponent implements OnInit {
   ngOnInit() {
     this.loadCartData();
     this.loadAddressData();
-    
+     this.seoService.setSeoData({
+      title: 'Checkout - Secure Payment | SpotFit Gym Wear',
+      description: 'Complete your gym wear purchase securely. Multiple payment options available including UPI, Credit Card, and Debit Card.',
+      keywords: 'checkout, payment, buy gym wear, secure payment'
+    });
     // Wait for config to load
     this.configService.isConfigLoaded().subscribe(loaded => {
       this.configLoaded = loaded;

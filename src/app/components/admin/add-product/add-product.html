@@ -1,3 +1,4 @@
+<!-- add-product.html - UPDATED -->
 <div class="add-product-container">
   <div class="form-card">
     <h2 class="form-title">➕ Add New Product</h2>
@@ -22,16 +23,32 @@
         <input type="number" id="price" [(ngModel)]="product.price" name="price" required />
       </div>
 
-      <!-- Image URL -->
-      <div class="form-group">
-        <label for="imageUrl">Image URL</label>
-        <input type="text" id="imageUrl" [(ngModel)]="product.imageUrl" name="imageUrl" />
+      <!-- ✅ NEW: Hero Banner Options -->
+      <div class="form-group checkbox-group">
+        <label>
+          <input type="checkbox" [(ngModel)]="product.heroBanner" name="heroBanner" />
+          Use as Hero Banner
+        </label>
       </div>
 
-      <!-- File Upload -->
+      <div class="form-group" *ngIf="product.heroBanner">
+        <label for="bannerOrder">Banner Display Order</label>
+        <input type="number" id="bannerOrder" [(ngModel)]="product.bannerOrder" name="bannerOrder" min="0" />
+        <small>Lower numbers display first</small>
+      </div>
+
+      <!-- ✅ NEW: Multiple File Upload -->
       <div class="form-group">
-        <label for="file">Upload Image</label>
-        <input type="file" id="file" (change)="onFileSelected($event)" />
+        <label for="files">Upload Images (Multiple)</label>
+        <input type="file" id="files" multiple (change)="onFileSelected($event)" accept="image/*" />
+      </div>
+
+      <!-- ✅ NEW: Image Previews -->
+      <div class="image-previews" *ngIf="imagePreviews.length > 0">
+        <div class="image-preview-item" *ngFor="let preview of imagePreviews; let i = index">
+          <img [src]="preview" alt="Preview {{i+1}}" />
+          <button type="button" class="btn-remove" (click)="removeImage(i)">×</button>
+        </div>
       </div>
 
       <!-- Featured -->
@@ -42,19 +59,18 @@
         </label>
       </div>
 
-      <!-- Product Type (Admin Only for Now) -->
-<div class="form-group">
-  <label for="type">Product Type</label>
-  <select id="type" [(ngModel)]="product.type" name="type" required>
-    <option value="">-- Select Type --</option>
-    <option value="Lower">Lower</option>
-    <option value="Sando">Sando</option>
-    <option value="T-Shirt">T-Shirt</option>
-    <option value="Nikker">Nikker</option>
-    <option value="Nikker">New Arrivals</option>
-  </select>
-</div>
-
+      <!-- Product Type -->
+      <div class="form-group">
+        <label for="type">Product Type</label>
+        <select id="type" [(ngModel)]="product.type" name="type" required>
+          <option value="">-- Select Type --</option>
+          <option value="Lower">Lower</option>
+          <option value="Sando">Sando</option>
+          <option value="T-Shirt">T-Shirt</option>
+          <option value="Nikker">Nikker</option>
+          <option value="New Arrivals">New Arrivals</option>
+        </select>
+      </div>
 
       <!-- Quantity -->
       <div class="form-group">
