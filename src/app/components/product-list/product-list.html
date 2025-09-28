@@ -36,6 +36,7 @@
     Buy Now
   </button>
 
+  <!-- Replace this section in your navbar -->
   <div class="nav-icons">
     <!-- 🛒 Cart with Badge -->
     <div class="cart-icon" (click)="goToCart()">
@@ -43,17 +44,48 @@
       <span *ngIf="cartCount > 0" class="cart-badge">{{ cartCount }}</span>
     </div>
 
-    <button class="btn-login desktop-only" (click)="goLogin()">Login</button>
+    <!-- ✅ User Profile (when logged in) -->
+    <div *ngIf="isLoggedIn; else loginButton" class="user-profile desktop-only" [class.active]="userDropdownOpen"
+      (click)="toggleUserDropdown()">
+
+      <div class="user-avatar">
+        {{ getUserInitials() }}
+      </div>
+      <span class="user-name">{{ getUserName() }}</span>
+
+      <!-- User Dropdown Menu -->
+      <div class="user-dropdown">
+        <div class="user-dropdown-item" (click)="goToProfile()">
+          <i class="fas fa-user"></i>
+          My Profile
+        </div>
+        <div class="user-dropdown-item" (click)="goToOrders()">
+          <i class="fas fa-shopping-bag"></i>
+          My Orders
+        </div>
+        <div class="user-dropdown-divider"></div>
+        <div class="user-dropdown-item" (click)="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+          Logout
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ Login Button (when not logged in) -->
+    <ng-template #loginButton>
+      <button class="btn-login desktop-only" (click)="goLogin()">Login</button>
+    </ng-template>
   </div>
 </nav>
 
+<!-- Mobile menu (left side) -->
 <!-- Mobile menu (left side) -->
 <div class="mobile-menu-left" [class.active]="menuOpen">
   <div class="mobile-logo">
     <img src="Screen_Sorrt.png" alt="SpotFit Logo" />
     <span>Spot<span>Fit</span></span>
   </div>
-  
+
   <ul>
     <li (click)="filterByTypeAndClose('Lower')"><i class="fas fa-tshirt"></i> Lower</li>
     <li (click)="filterByTypeAndClose('Sando')"><i class="fas fa-vest"></i> Sando</li>
@@ -61,8 +93,25 @@
     <li (click)="filterByTypeAndClose('Nikker')"><i class="fas fa-shoe-prints"></i> Nikker</li>
     <li (click)="filterByTypeAndClose('New Arrivals')"><i class="fas fa-star"></i> New Arrivals</li>
     <li (click)="resetFilterAndClose()"><i class="fas fa-boxes"></i> All Products</li>
-    <li (click)="goLoginAndClose()"><i class="fas fa-user"></i> Login</li>
-    <li (click)="goToCartAndClose()"><i class="fas fa-shopping-cart"></i> Cart ({{ cartCount }})</li>
+
+    <!-- Show login or user profile based on auth state -->
+    <li *ngIf="!isLoggedIn" (click)="goLoginAndClose()">
+      <i class="fas fa-user"></i> Login
+    </li>
+
+    <li *ngIf="isLoggedIn" (click)="goToProfileAndClose()">
+      <i class="fas fa-user"></i> My Profile
+    </li>
+    <li *ngIf="isLoggedIn" (click)="goToOrdersAndClose()">
+      <i class="fas fa-shopping-bag"></i> My Orders
+    </li>
+    <li *ngIf="isLoggedIn" (click)="logoutAndClose()">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </li>
+
+    <li (click)="goToCartAndClose()">
+      <i class="fas fa-shopping-cart"></i> Cart ({{ cartCount }})
+    </li>
   </ul>
 </div>
 
@@ -76,16 +125,16 @@
       <h3>Select Size</h3>
       <button class="modal-close" (click)="closeSizeModal()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+          <path
+            d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
         </svg>
       </button>
     </div>
-    
+
     <div class="modal-body">
       <div class="product-preview">
-        <img [src]="getProductImage(selectedProduct)" 
-             [alt]="selectedProduct.title" 
-             onerror="this.src='assets/placeholder-image.jpg'"/>
+        <img [src]="getProductImage(selectedProduct)" [alt]="selectedProduct.title"
+          onerror="this.src='assets/placeholder-image.jpg'" />
         <div class="product-info">
           <h4>{{ selectedProduct.title || 'Product' }}</h4>
           <div class="price">
@@ -99,42 +148,39 @@
           </div>
         </div>
       </div>
-      
+
       <div class="size-selection">
         <div class="size-header">
           <span class="size-label">SELECT SIZE</span>
           <span class="size-guide" (click)="openSizeGuide()">Size Guide</span>
         </div>
-        
+
         <div class="size-grid" *ngIf="selectedProduct.sizes && selectedProduct.sizes.length > 0; else noSizes">
-          <button *ngFor="let size of selectedProduct.sizes" 
-                  class="size-option"
-                  [class.selected]="selectedSize === size"
-                  [class.out-of-stock]="isSizeOutOfStock(size)"
-                  (click)="selectSize(size)"
-                  [disabled]="isSizeOutOfStock(size)">
+          <button *ngFor="let size of selectedProduct.sizes" class="size-option"
+            [class.selected]="selectedSize === size" [class.out-of-stock]="isSizeOutOfStock(size)"
+            (click)="selectSize(size)" [disabled]="isSizeOutOfStock(size)">
             <span class="size-text">{{ size }}</span>
             <span *ngIf="isSizeOutOfStock(size)" class="stock-status">Out of Stock</span>
           </button>
         </div>
-        
+
         <ng-template #noSizes>
           <div class="no-sizes-message">
             <p>This product doesn't require size selection.</p>
           </div>
         </ng-template>
-        
+
         <div *ngIf="sizeError" class="error-message">
           {{ sizeError }}
         </div>
       </div>
     </div>
-    
+
     <div class="modal-actions">
       <button class="btn-secondary" (click)="closeSizeModal()">Cancel</button>
-      <button class="btn-primary" 
-              [disabled]="(selectedProduct.sizes && selectedProduct.sizes.length > 0 && !selectedSize) || isSizeOutOfStock(selectedSize)"
-              (click)="confirmSizeSelection()">
+      <button class="btn-primary"
+        [disabled]="(selectedProduct.sizes && selectedProduct.sizes.length > 0 && !selectedSize) || isSizeOutOfStock(selectedSize)"
+        (click)="confirmSizeSelection()">
         {{ isBuyNowMode ? 'Buy Now' : 'Add to Cart' }}
       </button>
     </div>
@@ -148,11 +194,12 @@
       <h3>Size Guide</h3>
       <button class="modal-close" (click)="closeSizeGuide()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+          <path
+            d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
         </svg>
       </button>
     </div>
-    
+
     <div class="size-guide-body">
       <div class="guide-section">
         <h4>How to choose your size:</h4>
@@ -162,7 +209,7 @@
           <li>If between sizes, choose the larger size</li>
         </ul>
       </div>
-      
+
       <div class="size-chart">
         <h4>Size Chart (in inches)</h4>
         <table>
@@ -208,14 +255,12 @@
 
 <!-- ✅ Dynamic Hero Banner -->
 <div *ngIf="heroBanners.length > 0" class="hero-banner-container">
-  <div class="hero-banner" 
-       *ngFor="let banner of heroBanners; let i = index"
-       [class.active]="i === currentBannerIndex">
-    
+  <div class="hero-banner" *ngFor="let banner of heroBanners; let i = index" [class.active]="i === currentBannerIndex">
+
     <div class="image-wrapper">
       <img [src]="getProductImage(banner)" [alt]="banner.title" />
     </div>
-    
+
     <div class="hero-text">
       <h1>{{ banner.title }}</h1>
       <p>{{ banner.description }}</p>
@@ -225,10 +270,8 @@
 
   <!-- ✅ Banner Navigation Dots -->
   <div class="banner-dots" *ngIf="heroBanners.length > 1">
-    <span *ngFor="let banner of heroBanners; let i = index"
-          [class.active]="i === currentBannerIndex"
-          (click)="goToBanner(i)"
-          class="banner-dot">
+    <span *ngFor="let banner of heroBanners; let i = index" [class.active]="i === currentBannerIndex"
+      (click)="goToBanner(i)" class="banner-dot">
     </span>
   </div>
 </div>
@@ -245,15 +288,12 @@
 
 <!-- ✅ Product Grid (updated buttons) -->
 <div class="product-container">
-  <div class="product-card" 
-       *ngFor="let p of normalProducts"
-       (mouseenter)="onProductHover(p)"
-       (mouseleave)="onProductLeave(p)">
-    
+  <div class="product-card" *ngFor="let p of normalProducts" (mouseenter)="onProductHover(p)"
+    (mouseleave)="onProductLeave(p)">
+
     <div class="image-wrapper">
-      <img [src]="getProductImage(p, p._id ? (currentImageIndex[p._id] || 0) : 0)" 
-           [alt]="p.title" />
-      
+      <img [src]="getProductImage(p, p._id ? (currentImageIndex[p._id] || 0) : 0)" [alt]="p.title" />
+
       <div class="image-count" *ngIf="p.images && p.images.length > 1">
         {{ (p._id ? (currentImageIndex[p._id] || 0) : 0) + 1 }}/{{ p.images.length }}
       </div>
@@ -293,18 +333,14 @@
         </ng-container>
 
         <ng-template #addToCartBtn>
-          <button class="btn-add" 
-                  [disabled]="p.quantity === 0" 
-                  (click)="openSizeModal(p, false)">
+          <button class="btn-add" [disabled]="p.quantity === 0" (click)="openSizeModal(p, false)">
             {{ p.quantity === 0 ? "Out of Stock" : "Add to Cart" }}
           </button>
         </ng-template>
       </div>
 
       <!-- ✅ Buy Now Button -->
-      <button class="btn-buy-now" 
-              (click)="openSizeModal(p, true)"
-              [disabled]="p.quantity === 0">
+      <button class="btn-buy-now" (click)="openSizeModal(p, true)" [disabled]="p.quantity === 0">
         Buy Now
       </button>
     </div>

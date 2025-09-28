@@ -271,3 +271,29 @@
     }
   }
 }
+
+/* Add to checkout.scss */
+.address-card {
+  &.placeholder.error {
+    border-color: #ff4444;
+    background-color: #fff8f8;
+  }
+  
+  .error-message {
+    color: #ff4444;
+    font-size: 14px;
+    margin-top: 8px;
+    font-weight: 500;
+  }
+}
+
+.btn-pay-now {
+  &.disabled {
+    background: #ccc !important;
+    cursor: not-allowed !important;
+    
+    &:hover {
+      background: #ccc !important;
+    }
+  }
+}

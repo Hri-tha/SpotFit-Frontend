@@ -1,10 +1,12 @@
-import { Component, OnInit, HostListener, inject} from '@angular/core';
+import { Component, OnInit, HostListener, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Product } from '../../models/product';
 import { ProductService } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
 import { CommonModule } from '@angular/common';
 import { SeoService } from '../../services/seo.service';
+import { AuthService } from '../../services/auth.service'; 
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-product-list',
@@ -21,7 +23,7 @@ export class ProductListComponent implements OnInit {
   allProducts: Product[] = [];
 
   currentBannerIndex: number = 0;
-  bannerInterval: any; 
+  bannerInterval: any;
   cartCount: number = 0;
   menuOpen: boolean = false;
   showSizeModal: boolean = false;
@@ -30,14 +32,19 @@ export class ProductListComponent implements OnInit {
   selectedSize: string = '';
   isBuyNowMode: boolean = false;
   sizeError: string = '';
+  isLoggedIn: boolean = false; // Set this based on your authentication
+  userDropdownOpen: boolean = false;
+  currentUser: any = null;
 
+  private authSubscription!: Subscription;
   private seoService = inject(SeoService);
+  private authService = inject(AuthService);
 
   constructor(
     private svc: ProductService,
     private cartService: CartService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.seoService.setDefaultSeo();
@@ -48,8 +55,26 @@ export class ProductListComponent implements OnInit {
     this.cartService.cart$.subscribe((items) => {
       this.cartCount = items.reduce((sum, i) => sum + i.quantity, 0);
     });
+
+     this.authSubscription = this.authService.currentUser$.subscribe(user => {
+      this.isLoggedIn = !!user;
+      this.currentUser = user;
+      console.log('Auth state changed:', { isLoggedIn: this.isLoggedIn, user: this.currentUser });
+    });
+
+    this.isLoggedIn = this.authService.isAuthenticated();
+    if (this.isLoggedIn) {
+      this.currentUser = this.authService.currentUser$.value;
+    }
   }
 
+  ngOnDestroy() {
+    // Clean up subscription
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
+    }
+  }
+  
   loadHeroBanners() {
     this.svc.getHeroBanners().subscribe((banners) => {
       this.heroBanners = banners;
@@ -74,7 +99,7 @@ export class ProductListComponent implements OnInit {
   // ✅ Open Size Modal - FIXED
   openSizeModal(product: Product, isBuyNow: boolean = false) {
     console.log('Opening size modal for product:', product);
-    
+
     if (!product) {
       console.error('No product provided to size modal');
       return;
@@ -85,7 +110,7 @@ export class ProductListComponent implements OnInit {
     this.selectedSize = '';
     this.sizeError = '';
     this.showSizeModal = true;
-    
+
     console.log('Modal product data:', this.selectedProduct);
     console.log('Product image URL:', this.getProductImage(this.selectedProduct));
   }
@@ -95,6 +120,67 @@ export class ProductListComponent implements OnInit {
     this.selectedProduct = null;
     this.selectedSize = '';
     this.sizeError = '';
+  }
+  toggleUserDropdown(): void {
+    this.userDropdownOpen = !this.userDropdownOpen;
+  }
+
+  getUserInitials(): string {
+    if (!this.currentUser) return 'U';
+
+    const name = this.currentUser.name || this.currentUser.email || 'User';
+    return name
+      .split(' ')
+      .map((part: string) => part.charAt(0).toUpperCase()) // Add type annotation here
+      .join('')
+      .substring(0, 2);
+  }
+  getUserName(): string {
+    if (!this.currentUser) return 'User';
+    return this.currentUser.name || this.currentUser.email.split('@')[0];
+  }
+
+  goToProfile(): void {
+    this.userDropdownOpen = false;
+    // Navigate to user profile page
+    console.log('Navigate to profile');
+  }
+
+  goToOrders(): void {
+    this.userDropdownOpen = false;
+    // Navigate to orders page
+    console.log('Navigate to orders');
+  }
+
+  logout(): void {
+    this.userDropdownOpen = false;
+    this.isLoggedIn = false;
+    this.currentUser = null;
+    // Add your logout logic here
+    console.log('User logged out');
+  }
+
+  goToProfileAndClose(): void {
+    this.closeMenu();
+    this.goToProfile();
+  }
+
+  goToOrdersAndClose(): void {
+    this.closeMenu();
+    this.goToOrders();
+  }
+
+  logoutAndClose(): void {
+    this.closeMenu();
+    this.logout();
+  }
+
+  // Close dropdown when clicking outside
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    if (!(event.target as Element).closest('.user-profile')) {
+      this.userDropdownOpen = false;
+    }
   }
 
   // ✅ Select Size
@@ -169,7 +255,7 @@ export class ProductListComponent implements OnInit {
   // ✅ FIXED: Get product image method
   getProductImage(product: Product, index: number = 0): string {
     if (!product) return 'assets/placeholder-image.jpg';
-    
+
     // Check if product has multiple images array
     if (product.images && Array.isArray(product.images) && product.images.length > 0) {
       const safeIndex = index % product.images.length;
@@ -183,11 +269,11 @@ export class ProductListComponent implements OnInit {
     if (product.images && Array.isArray(product.images) && product.images.length > 1) {
       const productId = product._id!;
       this.currentImageIndex[productId] = this.currentImageIndex[productId] || 0;
-      
+
       // Use type assertion for dynamic property
       (product as any).hoverInterval = setInterval(() => {
         if (this.currentImageIndex[productId] !== undefined) {
-          this.currentImageIndex[productId] = 
+          this.currentImageIndex[productId] =
             (this.currentImageIndex[productId] + 1) % product.images!.length;
         }
       }, 1500);
@@ -228,7 +314,7 @@ export class ProductListComponent implements OnInit {
 
   filterByType(type: string) {
     if (!type) return;
-    
+
     this.normalProducts = this.allProducts.filter(
       (p) => p.type === type && !p.featured
     );

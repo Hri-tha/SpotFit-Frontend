@@ -1,29 +1,32 @@
-// src/app/services/config.service.ts
+// config.service.ts - FIXED VERSION
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConfigService {
-  private razorpayKeyId: string = 'temp_key'; // Temporary key
+  private razorpayKeyId: string = environment.razorpayKeyId; // Use environment value as fallback
   private configLoaded = new BehaviorSubject<boolean>(false);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    // Auto-load config when service is created
+    this.loadConfig();
+  }
 
   loadConfig(): Promise<void> {
     return new Promise((resolve, reject) => {
-      // Temporary: Resolve immediately with mock data
-      setTimeout(() => {
-        this.razorpayKeyId = 'temp_key';
+      // If we already have a key from environment, consider it loaded
+      if (environment.razorpayKeyId) {
+        this.razorpayKeyId = environment.razorpayKeyId;
         this.configLoaded.next(true);
         resolve();
-      }, 100);
+        return;
+      }
 
-      // Comment out the actual API call for now
-      /*
+      // Otherwise, try to load from backend
       this.http.get<{ keyId: string }>(`${environment.apiUrl}/payment/config`).subscribe({
         next: (config) => {
           this.razorpayKeyId = config.keyId;
@@ -31,14 +34,13 @@ export class ConfigService {
           resolve();
         },
         error: (err) => {
-          console.error('Failed to load config:', err);
-          // Don't reject - use fallback values
-          this.razorpayKeyId = 'fallback_key';
+          console.error('Failed to load config from backend:', err);
+          // Use fallback
+          this.razorpayKeyId = 'rzp_test_default'; // Fallback key
           this.configLoaded.next(true);
           resolve();
         }
       });
-      */
     });
   }
 

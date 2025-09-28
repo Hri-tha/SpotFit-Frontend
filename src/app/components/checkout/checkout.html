@@ -14,6 +14,7 @@
     <div class="checkout-left">
       <!-- Delivery Address Section -->
       <!-- checkout.html - UPDATED address section -->
+<!-- - checkout.html - IMPROVED address section --> 
 <div class="address-section">
   <h2>Delivery Address</h2>
   
@@ -31,10 +32,11 @@
   </div>
   
   <ng-template #noAddress>
-    <div class="address-card placeholder">
+    <div class="address-card placeholder" [class.error]="addressError">
       <div class="address-details">
         <h3>Add Delivery Address</h3>
         <p>Please add a delivery address to continue with your order</p>
+        <p *ngIf="addressError" class="error-message">⚠️ {{ addressError }}</p>
       </div>
       <button class="btn-change-address" (click)="changeAddress()">Add Address</button>
     </div>
@@ -42,8 +44,16 @@
 </div>
 
       <!-- Add this to your checkout.html file -->
-<button class="btn-pay-now" (click)="payWithRazorpay()" [disabled]="isLoading">
-  <span *ngIf="!isLoading">Proceed to Pay ₹{{ formatCurrency(getFinalTotal()) }}</span>
+<button class="btn-pay-now" 
+        (click)="payWithRazorpay()" 
+        [disabled]="isLoading || !selectedAddress"
+        [class.disabled]="!selectedAddress">
+  <span *ngIf="selectedAddress && !isLoading">
+    Proceed to Pay ₹{{ formatCurrency(getFinalTotal()) }}
+  </span>
+  <span *ngIf="!selectedAddress">
+    Please Add Address First
+  </span>
   <span *ngIf="isLoading">Processing...</span>
 </button>
 

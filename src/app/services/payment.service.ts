@@ -29,8 +29,8 @@ export class PaymentService {
   // Create order and payment options
   createPaymentOptions(amount: number, orderId: string, customerDetails: any, prefillData: any) {
     return {
-      key: 'rzp_test_YOUR_API_KEY', // Replace with your Razorpay API Key
-      amount: amount * 100, // Amount in paise
+      key: 'rzp_live_RMdzh3tFYlmgp4', // Replace with your Razorpay API Key
+      amount: amount * 1, // Amount in paise
       currency: 'INR',
       name: 'SpotFit',
       description: 'Order Payment',

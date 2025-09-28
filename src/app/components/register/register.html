@@ -1,0 +1,124 @@
+<!-- register.html - WITH PASSWORD STRENGTH -->
+<div class="register-container">
+  <div class="register-card">
+    <div class="register-header">
+      <div class="logo">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 5.5V7H9V5.5L3 7V9L9 10.5V12.5L3 14V16L9 17.5V21H15V17.5L21 16V14L15 12.5V10.5L21 9Z"/>
+        </svg>
+      </div>
+      <h1 class="welcome-text">Create Account</h1>
+      <p class="subtitle">Join SpotFit today</p>
+    </div>
+
+    <form class="register-form" (submit)="onSubmit()" #registerForm="ngForm">
+      <div class="form-group">
+        <label for="name" class="form-label">Full Name</label>
+        <input 
+          id="name"
+          type="text" 
+          class="form-input" 
+          placeholder="Enter your full name"
+          [(ngModel)]="name" 
+          name="name"
+          required
+          #nameInput="ngModel"
+          [class.error]="nameInput.invalid && nameInput.touched"
+        />
+        <div class="error-message" *ngIf="nameInput.invalid && nameInput.touched">
+          Name is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email" class="form-label">Email Address</label>
+        <input 
+          id="email"
+          type="email" 
+          class="form-input" 
+          placeholder="Enter your email"
+          [(ngModel)]="email" 
+          name="email"
+          required
+          email
+          #emailInput="ngModel"
+          [class.error]="emailInput.invalid && emailInput.touched"
+        />
+        <div class="error-message" *ngIf="emailInput.invalid && emailInput.touched">
+          <span *ngIf="emailInput.errors?.['required']">Email is required</span>
+          <span *ngIf="emailInput.errors?.['email']">Please enter a valid email</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <input 
+          id="password"
+          type="password" 
+          class="form-input" 
+          placeholder="Enter your password"
+          [(ngModel)]="password" 
+          name="password"
+          required
+          minlength="6"
+          (input)="checkPasswordStrength()"
+          #passwordInput="ngModel"
+          [class.error]="passwordInput.invalid && passwordInput.touched"
+        />
+        
+        <!-- Password Strength Indicator -->
+        <div class="password-strength" *ngIf="password">
+          <div class="strength-bar">
+            <div class="strength-fill" [class]="passwordStrength"></div>
+          </div>
+          <div class="strength-text" *ngIf="passwordStrength">
+            Password strength: {{ passwordStrength }}
+          </div>
+        </div>
+        
+        <div class="error-message" *ngIf="passwordInput.invalid && passwordInput.touched">
+          <span *ngIf="passwordInput.errors?.['required']">Password is required</span>
+          <span *ngIf="passwordInput.errors?.['minlength']">Password must be at least 6 characters</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword" class="form-label">Confirm Password</label>
+        <input 
+          id="confirmPassword"
+          type="password" 
+          class="form-input" 
+          placeholder="Confirm your password"
+          [(ngModel)]="confirmPassword" 
+          name="confirmPassword"
+          required
+          #confirmPasswordInput="ngModel"
+          [class.error]="confirmPasswordInput.invalid && confirmPasswordInput.touched || (confirmPassword && password !== confirmPassword)"
+        />
+        <div class="error-message" *ngIf="confirmPassword && password !== confirmPassword">
+          Passwords do not match
+        </div>
+        <div class="error-message" *ngIf="confirmPasswordInput.invalid && confirmPasswordInput.touched">
+          Please confirm your password
+        </div>
+      </div>
+
+      <button 
+        type="submit" 
+        class="login-button"
+        [disabled]="registerForm.invalid || isLoading || (confirmPassword && password !== confirmPassword)"
+        [class.loading]="isLoading"
+      >
+        <span *ngIf="!isLoading">Create Account</span>
+        <span *ngIf="isLoading" class="button-loading">
+          <span class="spinner"></span>
+          Creating account...
+        </span>
+      </button>
+    </form>
+
+    <div class="signup-link">
+      Already have an account? <a href="/login" class="link" routerLink="/login">Sign in</a>
+    </div>
+  </div>
+</div>

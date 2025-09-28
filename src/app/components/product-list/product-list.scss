@@ -1106,6 +1106,107 @@ body {
   }
 }
 
+/* ✅ User Profile Styles */
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  position: relative;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c1121f, #780000);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+
+.user-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(193, 18, 31, 0.3);
+}
+
+.user-name {
+  font-weight: 500;
+  color: #222;
+  transition: color 0.3s ease;
+}
+
+.user-profile:hover .user-name {
+  color: #c1121f;
+}
+
+/* User Dropdown Menu */
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  min-width: 180px;
+  padding: 0.5rem 0;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+
+.user-profile.active .user-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(5px);
+}
+
+.user-dropdown-item {
+  padding: 0.8rem 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.user-dropdown-item:hover {
+  background: #f5f5f5;
+  color: #c1121f;
+}
+
+.user-dropdown-item i {
+  width: 16px;
+  text-align: center;
+}
+
+.user-dropdown-divider {
+  height: 1px;
+  background: #eee;
+  margin: 0.3rem 0;
+}
+
+/* Mobile User Profile */
+@media (max-width: 768px) {
+  .user-profile .user-name {
+    display: none;
+  }
+  
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+}
+
 /* ✅ Media Query Fix - Make sure this is at the END of your CSS file */
 @media (max-width: 768px) {
   .desktop-only {

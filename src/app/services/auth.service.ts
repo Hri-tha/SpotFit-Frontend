@@ -4,6 +4,7 @@ import { environment } from '../../environments/environment';
 import { BehaviorSubject, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
+// auth.service.ts - IMPROVED to handle user name
 export class AuthService {
   api = `${environment.apiUrl}/auth`;
   private tokenKey = 'sprtfit_token';
@@ -12,16 +13,28 @@ export class AuthService {
   constructor(private http: HttpClient) {
     const t = this.getToken();
     if (t) {
-      // decode minimal info (skip JWT decode lib for brevity)
       try {
         const payload = JSON.parse(atob(t.split('.')[1]));
         this.currentUser$.next(payload);
-      } catch (err) { }
+      } catch (err) { 
+        console.error('Error parsing token:', err);
+      }
     }
   }
 
   login(email: string, password: string) {
     return this.http.post<any>(`${this.api}/login`, { email, password }).pipe(
+      tap(res => {
+        if (res.token) {
+          localStorage.setItem(this.tokenKey, res.token);
+          this.currentUser$.next(res.user);
+        }
+      })
+    );
+  }
+
+  register(userData: any) {
+    return this.http.post<any>(`${this.api}/register`, userData).pipe(
       tap(res => {
         if (res.token) {
           localStorage.setItem(this.tokenKey, res.token);
@@ -40,12 +53,17 @@ export class AuthService {
     return localStorage.getItem(this.tokenKey);
   }
 
-  isAdmin() {
+  isAuthenticated(): boolean {
+    return !!this.getToken();
+  }
+
+  getUserName(): string {
     const user = this.currentUser$.value;
-    if (!user) return false;
-    if (user.role === 'admin') return true;
-    // Optionally, if backend used ADMIN_EMAIL check, the token will contain email,
-    // so this function will still work when that email matches.
-    return false;
+    return user?.name || user?.email || 'User';
+  }
+
+  isAdmin(): boolean {
+    const user = this.currentUser$.value;
+    return user?.role === 'admin';
   }
 }
