@@ -74,7 +74,7 @@ export class ProductListComponent implements OnInit {
       this.authSubscription.unsubscribe();
     }
   }
-  
+
   loadHeroBanners() {
     this.svc.getHeroBanners().subscribe((banners) => {
       this.heroBanners = banners;
@@ -164,6 +164,38 @@ export class ProductListComponent implements OnInit {
     this.closeMenu();
     this.goToProfile();
   }
+
+  goToProducts(): void {
+  this.resetFilter();
+  this.router.navigate(['/']);
+}
+
+goToSale(): void {
+  // Filter products with discount
+  this.normalProducts = this.allProducts.filter(p => 
+    p.discount && p.discount > 0 && !p.featured
+  );
+  this.featuredProduct = this.allProducts.find(p => 
+    p.discount && p.discount > 0 && p.featured
+  );
+  this.scrollToProducts();
+}
+
+goToShipping(): void {
+  // You can create a shipping info page or show a modal
+  alert('Shipping Information:\n\n• Standard Delivery: 3-5 business days\n• Express Delivery: 1-2 business days\n• Free shipping on orders above ₹999\n• Cash on Delivery available');
+}
+
+goToReturns(): void {
+  alert('Return Policy:\n\n• 30-day return policy\n• Items must be unused with tags\n• Free returns for defective products\n• Refund processed within 7 business days');
+}
+
+scrollToProducts(): void {
+  const productsSection = document.querySelector('.product-container');
+  if (productsSection) {
+    productsSection.scrollIntoView({ behavior: 'smooth' });
+  }
+}
 
   goToOrdersAndClose(): void {
     this.closeMenu();

@@ -1207,6 +1207,221 @@ body {
   }
 }
 
+/* ✅ About Section Styles */
+.about-section {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  color: white;
+  padding: 3rem 2rem;
+  margin-top: 4rem;
+}
+
+.about-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 3rem;
+}
+
+.about-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.about-logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.about-logo img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.about-logo span {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.about-logo span span {
+  color: #c1121f;
+}
+
+.about-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #e0e0e0;
+  margin-bottom: 1rem;
+}
+
+.about-stats {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #c1121f;
+  display: block;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #b0b0b0;
+}
+
+/* Quick Links */
+.about-links h3,
+.about-contact h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+  color: white;
+  position: relative;
+}
+
+.about-links h3::after,
+.about-contact h3::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background: #c1121f;
+  border-radius: 2px;
+}
+
+.about-links ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.about-links li {
+  transition: all 0.3s ease;
+}
+
+.about-links a {
+  color: #b0b0b0;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.about-links a:hover {
+  color: #c1121f;
+  transform: translateX(5px);
+}
+
+.about-links i {
+  width: 20px;
+  text-align: center;
+}
+
+/* Contact Info */
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #b0b0b0;
+}
+
+.contact-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(193, 18, 31, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #c1121f;
+}
+
+.social-links {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.social-link {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.social-link:hover {
+  background: #c1121f;
+  transform: translateY(-3px);
+}
+
+/* Copyright */
+.copyright {
+  text-align: center;
+  padding-top: 2rem;
+  margin-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #888;
+  font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .about-section {
+    padding: 2rem 1rem;
+  }
+  
+  .about-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .about-stats {
+    justify-content: space-around;
+  }
+  
+  .stat-number {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .about-logo span {
+    font-size: 1.5rem;
+  }
+}
+
 /* ✅ Media Query Fix - Make sure this is at the END of your CSS file */
 @media (max-width: 768px) {
   .desktop-only {
