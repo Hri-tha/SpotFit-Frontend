@@ -1,19 +1,38 @@
-<!-- src/app/components/order-success/order-success.component.html -->
+<!-- src/app/components/order-success/order-success.component.html - UPDATED -->
 <div class="order-success-container">
   <div class="success-card">
     <div class="success-icon">✓</div>
     <h1>Order Successful!</h1>
     <p>Thank you for your purchase</p>
     
-    <div class="order-details">
+    <div class="order-details" *ngIf="!isLoading; else loading">
       <p><strong>Order ID:</strong> {{ orderId }}</p>
       <p><strong>Payment ID:</strong> {{ paymentId }}</p>
+      
+      <div *ngIf="waybillNumber" class="tracking-section">
+        <p><strong>Tracking Number:</strong> {{ waybillNumber }}</p>
+        <button class="btn-track" (click)="trackOrder()">
+          📦 Track Your Order
+        </button>
+      </div>
+      
+      <div *ngIf="!waybillNumber" class="tracking-info">
+        <p>Your order is being processed. Tracking information will be available soon.</p>
+      </div>
     </div>
     
-    <p>Your order has been confirmed and will be shipped soon.</p>
+    <ng-template #loading>
+      <div class="loading-section">
+        <p>Loading order details...</p>
+      </div>
+    </ng-template>
     
-    <button class="btn-continue" (click)="continueShopping()">
-      Continue Shopping
-    </button>
+    <p>We've sent a confirmation email with your order details.</p>
+    
+    <div class="action-buttons">
+      <button class="btn-continue" (click)="continueShopping()">
+        Continue Shopping
+      </button>
+    </div>
   </div>
 </div>

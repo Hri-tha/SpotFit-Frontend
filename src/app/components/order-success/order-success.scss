@@ -1,4 +1,4 @@
-/* src/app/components/order-success/order-success.component.scss */
+/* src/app/components/order-success/order-success.component.scss - UPDATED */
 .order-success-container {
   display: flex;
   justify-content: center;
@@ -43,6 +43,43 @@ h1 {
   text-align: left;
 }
 
+.tracking-section {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #ddd;
+}
+
+.btn-track {
+  background: #2196f3;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-top: 10px;
+  
+  &:hover {
+    background: #1976d2;
+  }
+}
+
+.tracking-info {
+  margin-top: 15px;
+  padding: 10px;
+  background: #fff3cd;
+  border-radius: 4px;
+  border-left: 4px solid #ffc107;
+}
+
+.loading-section {
+  padding: 20px;
+  text-align: center;
+}
+
+.action-buttons {
+  margin-top: 20px;
+}
+
 .btn-continue {
   background: #c1121f;
   color: white;
@@ -51,7 +88,6 @@ h1 {
   border-radius: 30px;
   font-size: 16px;
   cursor: pointer;
-  margin-top: 20px;
   
   &:hover {
     background: #a50e1a;

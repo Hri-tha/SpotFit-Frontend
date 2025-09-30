@@ -1,4 +1,3 @@
-<!-- src/app/components/checkout/checkout.html (updated address section) -->
 <div class="checkout-container">
   <div class="checkout-header">
     <h1>Checkout</h1>
@@ -13,50 +12,71 @@
     <!-- Left column: Order summary and delivery address -->
     <div class="checkout-left">
       <!-- Delivery Address Section -->
-      <!-- checkout.html - UPDATED address section -->
-<!-- - checkout.html - IMPROVED address section --> 
-<div class="address-section">
-  <h2>Delivery Address</h2>
-  
-  <div *ngIf="selectedAddress; else noAddress" class="address-card selected">
-    <div class="address-details">
-      <h3>{{ selectedAddress.fullName }}</h3>
-      <p>{{ selectedAddress.addressLine1 }}</p>
-      <p *ngIf="selectedAddress.addressLine2">{{ selectedAddress.addressLine2 }}</p>
-      <p>{{ selectedAddress.city }}, {{ selectedAddress.state }} - {{ selectedAddress.pincode }}</p>
-      <p>{{ selectedAddress.country }}</p>
-      <p class="phone">Phone: {{ selectedAddress.phone }}</p>
-      <span class="address-type">{{ selectedAddress.type }}</span>
-    </div>
-    <button class="btn-change-address" (click)="changeAddress()">Change</button>
-  </div>
-  
-  <ng-template #noAddress>
-    <div class="address-card placeholder" [class.error]="addressError">
-      <div class="address-details">
-        <h3>Add Delivery Address</h3>
-        <p>Please add a delivery address to continue with your order</p>
-        <p *ngIf="addressError" class="error-message">⚠️ {{ addressError }}</p>
+      <div class="address-section">
+        <h2>Delivery Address <span class="required">*</span></h2>
+
+        <!-- Add test button
+        <div class="integration-test">
+          <button class="btn-test" (click)="testDelhiveryConnection()" [disabled]="isLoading">
+            <span *ngIf="!isLoading">🧪 Test Delhivery API</span>
+            <span *ngIf="isLoading">Testing API...</span>
+          </button>
+          <small>Test if Delhivery API is working correctly</small>
+        </div> -->
+
+        <div *ngIf="selectedAddress && isAddressValid(selectedAddress); else noAddress" class="address-card selected">
+          <div class="address-details">
+            <h3>{{ selectedAddress.fullName }}</h3>
+            <p>{{ selectedAddress.addressLine1 }}</p>
+            <p *ngIf="selectedAddress.addressLine2">{{ selectedAddress.addressLine2 }}</p>
+            <p>{{ selectedAddress.city }}, {{ selectedAddress.state }} - {{ selectedAddress.pincode }}</p>
+            <p>{{ selectedAddress.country }}</p>
+            <p class="phone">Phone: {{ selectedAddress.phone }}</p>
+            <span class="address-type">{{ selectedAddress.type }}</span>
+          </div>
+          <button class="btn-change-address" (click)="changeAddress()">Change</button>
+        </div>
+
+        <ng-template #noAddress>
+          <div class="address-card placeholder" [class.error]="addressError">
+            <div class="address-details">
+              <h3>Add Delivery Address</h3>
+              <p>Please add a complete delivery address to continue with your order</p>
+              <p *ngIf="addressError" class="error-message">⚠️ {{ addressError }}</p>
+            </div>
+            <button class="btn-change-address" (click)="changeAddress()">Add Address</button>
+          </div>
+        </ng-template>
+
+        <!-- Pincode Serviceability Check -->
+        <div *ngIf="selectedAddress && selectedAddress.pincode" class="serviceability-check">
+          <div *ngIf="isCheckingServiceability" class="checking-status">
+            <i class="fas fa-spinner fa-spin"></i> Checking delivery availability...
+          </div>
+          <div *ngIf="serviceabilityResult" [class.available]="serviceabilityResult.isServiceable"
+            [class.unavailable]="!serviceabilityResult.isServiceable" class="serviceability-result">
+            <i class="fas" [class.fa-check-circle]="serviceabilityResult.isServiceable"
+              [class.fa-times-circle]="!serviceabilityResult.isServiceable"></i>
+            {{ serviceabilityResult.message }}
+          </div>
+        </div>
       </div>
-      <button class="btn-change-address" (click)="changeAddress()">Add Address</button>
-    </div>
-  </ng-template>
-</div>
-
       <!-- Add this to your checkout.html file -->
-<button class="btn-pay-now" 
-        (click)="payWithRazorpay()" 
-        [disabled]="isLoading || !selectedAddress"
-        [class.disabled]="!selectedAddress">
-  <span *ngIf="selectedAddress && !isLoading">
-    Proceed to Pay ₹{{ formatCurrency(getFinalTotal()) }}
-  </span>
-  <span *ngIf="!selectedAddress">
-    Please Add Address First
-  </span>
-  <span *ngIf="isLoading">Processing...</span>
-</button>
-
+      <button class="btn-pay-now" (click)="payWithRazorpay()"
+        [disabled]="isLoading || !selectedAddress || !isAddressValid(selectedAddress) || !serviceabilityResult?.isServiceable"
+        [class.disabled]="!selectedAddress || !isAddressValid(selectedAddress) || !serviceabilityResult?.isServiceable">
+        <span
+          *ngIf="selectedAddress && isAddressValid(selectedAddress) && serviceabilityResult?.isServiceable && !isLoading">
+          Proceed to Pay ₹{{ formatCurrency(getFinalTotal()) }}
+        </span>
+        <span *ngIf="!selectedAddress || !isAddressValid(selectedAddress)">
+          Please Add Valid Address
+        </span>
+        <span *ngIf="selectedAddress && isAddressValid(selectedAddress) && !serviceabilityResult?.isServiceable">
+          Delivery Not Available
+        </span>
+        <span *ngIf="isLoading">Processing...</span>
+      </button>
       <!-- Order Summary Section -->
       <div class="order-summary">
         <h2>Order Summary</h2>
@@ -68,7 +88,7 @@
             <div class="item-details">
               <h3>{{ item.product.title }}</h3>
               <p *ngIf="item.size" class="item-size">Size: {{ item.size }}</p>
-              
+
               <!-- Show discounted price and original price if discounted -->
               <div class="price-section" *ngIf="item.product.discount && item.product.discount > 0; else noDiscount">
                 <span class="old-price">₹{{ formatCurrency(item.product.price) }}</span>
@@ -78,7 +98,7 @@
               <ng-template #noDiscount>
                 <span class="new-price">₹{{ formatCurrency(item.product.price) }}</span>
               </ng-template>
-              
+
               <div class="item-quantity">Quantity: {{ item.quantity }}</div>
             </div>
             <div class="item-total">
@@ -93,12 +113,12 @@
     <div class="checkout-right">
       <div class="payment-summary">
         <h2>Payment Summary</h2>
-        
+
         <div class="summary-row">
           <span>Items ({{ getTotalItems() }}):</span>
           <span>₹{{ formatCurrency(totalAmount) }}</span>
         </div>
-        
+
         <div class="summary-row">
           <span>Delivery:</span>
           <span *ngIf="totalAmount >= 500; else deliveryCharge">FREE</span>
@@ -106,24 +126,24 @@
             <span>₹49</span>
           </ng-template>
         </div>
-        
+
         <div *ngIf="totalAmount < 1000" class="summary-row">
           <span class="free-delivery-note">
             Add ₹{{ formatCurrency(1000 - totalAmount) }} more for FREE delivery
           </span>
         </div>
-        
+
         <div class="summary-divider"></div>
-        
+
         <div class="summary-row total">
           <span>Total:</span>
           <span>₹{{ formatCurrency(getFinalTotal()) }}</span>
         </div>
-        
+
         <button class="btn-pay-now" (click)="payWithRazorpay()">
           Proceed to Pay ₹{{ formatCurrency(getFinalTotal()) }}
         </button>
-        
+
         <div class="security-note">
           <i class="fas fa-lock"></i>
           <span>Your payment is secured with Razorpay</span>
@@ -131,4 +151,11 @@
       </div>
     </div>
   </div>
+</div>
+
+<!-- Add this to your checkout.html -->
+<div class="test-section" *ngIf="!isLoading">
+  <button (click)="testDelhiveryShipment()" class="btn-test">
+    Test Delhivery Shipment
+  </button>
 </div>
