@@ -144,9 +144,8 @@ export class ProductListComponent implements OnInit {
   }
 
   goToProfile(): void {
-    this.userDropdownOpen = false;
-    // Navigate to user profile page
-    console.log('Navigate to profile');
+   this.userDropdownOpen = false;
+  this.router.navigate(['/profile']);
   }
 
   goToOrders(): void {

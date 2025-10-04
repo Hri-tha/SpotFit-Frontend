@@ -1,0 +1,296 @@
+<!-- Loading Spinner -->
+<div *ngIf="isLoading" class="loading-container">
+  <div class="spinner"></div>
+  <p>Loading your profile...</p>
+</div>
+
+<!-- Main Profile Content -->
+<div *ngIf="!isLoading" class="profile-container">
+  <!-- Header -->
+  <div class="profile-header">
+    <button class="back-button" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      Back to Home
+    </button>
+    <h1>My Profile</h1>
+    <button *ngIf="!isEditing" class="edit-button" (click)="toggleEdit()">
+      <i class="fas fa-edit"></i>
+      Edit Profile
+    </button>
+  </div>
+
+  <!-- Profile Card -->
+  <div class="profile-card">
+    <!-- Profile Header Section -->
+    <div class="profile-header-section">
+      <div class="avatar-section">
+        <div class="avatar-large">
+          {{ getInitials() }}
+        </div>
+        <div class="avatar-info">
+          <h2>{{ userProfile.name || 'User' }}</h2>
+          <p>{{ userProfile.email }}</p>
+          <p *ngIf="userProfile.phone">{{ userProfile.phone }}</p>
+        </div>
+      </div>
+      <div *ngIf="isEditing" class="avatar-actions">
+        <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden>
+        <button class="btn-change-photo" (click)="fileInput.click()">
+          <i class="fas fa-camera"></i>
+          Change Photo
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="profile-tabs">
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'personal'"
+        (click)="setActiveTab('personal')">
+        <i class="fas fa-user"></i>
+        Personal Info
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'address'"
+        (click)="setActiveTab('address')">
+        <i class="fas fa-home"></i>
+        Address
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'preferences'"
+        (click)="setActiveTab('preferences')">
+        <i class="fas fa-cog"></i>
+        Preferences
+      </button>
+    </div>
+
+    <!-- Personal Info Tab -->
+    <div *ngIf="activeTab === 'personal'" class="tab-content">
+      <form (ngSubmit)="saveProfile()" #profileForm="ngForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              [(ngModel)]="userProfile.name" 
+              [disabled]="!isEditing"
+              required
+              class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              [(ngModel)]="userProfile.email" 
+              [disabled]="!isEditing"
+              required
+              class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input 
+              type="tel" 
+              id="phone" 
+              name="phone" 
+              [(ngModel)]="userProfile.phone" 
+              [disabled]="!isEditing"
+              class="form-input"
+              placeholder="+91 XXXXXXXXXX">
+          </div>
+
+          <div class="form-group">
+            <label for="gender">Gender</label>
+            <select 
+              id="gender" 
+              name="gender" 
+              [(ngModel)]="userProfile.gender" 
+              [disabled]="!isEditing"
+              class="form-select">
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+              <option value="prefer-not-to-say">Prefer not to say</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="dateOfBirth">Date of Birth</label>
+            <input 
+              type="date" 
+              id="dateOfBirth" 
+              name="dateOfBirth" 
+              [(ngModel)]="userProfile.dateOfBirth" 
+              [disabled]="!isEditing"
+              class="form-input">
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div *ngIf="isEditing" class="form-actions">
+          <button type="button" class="btn-cancel" (click)="toggleEdit()" [disabled]="isSaving">
+            Cancel
+          </button>
+          <button type="submit" class="btn-save" [disabled]="isSaving || !profileForm.form.valid">
+            <span *ngIf="!isSaving">Save Changes</span>
+            <span *ngIf="isSaving">Saving...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Address Tab -->
+    <div *ngIf="activeTab === 'address'" class="tab-content">
+      <form (ngSubmit)="saveProfile()" #addressForm="ngForm">
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label for="street">Street Address</label>
+            <input 
+              type="text" 
+              id="street" 
+              name="street" 
+              [(ngModel)]="userProfile.address.street" 
+              [disabled]="!isEditing"
+              class="form-input"
+              placeholder="House No., Building, Street">
+          </div>
+
+          <div class="form-group">
+            <label for="city">City</label>
+            <input 
+              type="text" 
+              id="city" 
+              name="city" 
+              [(ngModel)]="userProfile.address.city" 
+              [disabled]="!isEditing"
+              class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label for="state">State</label>
+            <input 
+              type="text" 
+              id="state" 
+              name="state" 
+              [(ngModel)]="userProfile.address.state" 
+              [disabled]="!isEditing"
+              class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label for="pincode">PIN Code</label>
+            <input 
+              type="text" 
+              id="pincode" 
+              name="pincode" 
+              [(ngModel)]="userProfile.address.pincode" 
+              [disabled]="!isEditing"
+              class="form-input"
+              maxlength="6">
+          </div>
+
+          <div class="form-group">
+            <label for="country">Country</label>
+            <input 
+              type="text" 
+              id="country" 
+              name="country" 
+              [(ngModel)]="userProfile.address.country" 
+              [disabled]="!isEditing"
+              class="form-input">
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div *ngIf="isEditing" class="form-actions">
+          <button type="button" class="btn-cancel" (click)="toggleEdit()" [disabled]="isSaving">
+            Cancel
+          </button>
+          <button type="submit" class="btn-save" [disabled]="isSaving">
+            <span *ngIf="!isSaving">Save Address</span>
+            <span *ngIf="isSaving">Saving...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Preferences Tab -->
+    <div *ngIf="activeTab === 'preferences'" class="tab-content">
+      <form (ngSubmit)="saveProfile()" #preferencesForm="ngForm">
+        <div class="preferences-list">
+          <div class="preference-item">
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                [(ngModel)]="userProfile.preferences.newsletter" 
+                [disabled]="!isEditing"
+                name="newsletter">
+              <span class="checkmark"></span>
+              Subscribe to Newsletter
+            </label>
+            <p class="preference-description">Receive updates about new products and promotions</p>
+          </div>
+
+          <div class="preference-item">
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                [(ngModel)]="userProfile.preferences.emailNotifications" 
+                [disabled]="!isEditing"
+                name="emailNotifications">
+              <span class="checkmark"></span>
+              Email Notifications
+            </label>
+            <p class="preference-description">Get order updates and promotional emails</p>
+          </div>
+
+          <div class="preference-item">
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                [(ngModel)]="userProfile.preferences.smsNotifications" 
+                [disabled]="!isEditing"
+                name="smsNotifications">
+              <span class="checkmark"></span>
+              SMS Notifications
+            </label>
+            <p class="preference-description">Receive order updates via SMS</p>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div *ngIf="isEditing" class="form-actions">
+          <button type="button" class="btn-cancel" (click)="toggleEdit()" [disabled]="isSaving">
+            Cancel
+          </button>
+          <button type="submit" class="btn-save" [disabled]="isSaving">
+            <span *ngIf="!isSaving">Save Preferences</span>
+            <span *ngIf="isSaving">Saving...</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Account Actions -->
+      <div class="account-actions">
+        <h3>Account Actions</h3>
+        <button class="btn-change-password" (click)="changePassword()">
+          <i class="fas fa-key"></i>
+          Change Password
+        </button>
+        <button class="btn-delete-account" (click)="deleteAccount()">
+          <i class="fas fa-trash"></i>
+          Delete Account
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

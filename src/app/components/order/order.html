@@ -34,7 +34,7 @@
   <div *ngIf="!isLoading && orders.length > 0" class="orders-list">
     <div *ngFor="let order of orders" class="order-card">
       
-      <!-- Order Header -->
+      <!-- Order Header - Always Visible -->
       <div class="order-header">
         <div class="order-info">
           <div class="order-id">Order #{{ order.orderId }}</div>
@@ -47,13 +47,13 @@
             (click)="cancelOrder(order._id)">
             Cancel Order
           </button>
-          <button class="btn-details" (click)="viewOrderDetails(order._id)">
-            View Details
+          <button class="btn-details" (click)="toggleOrderDetails(order._id)">
+            {{ isOrderExpanded(order._id) ? 'Hide Details' : 'View Details' }}
           </button>
         </div>
       </div>
 
-      <!-- Order Status -->
+      <!-- Order Status - Always Visible -->
       <div class="order-status">
         <div class="status-badge" [class]="getStatusClass(order.status)">
           {{ getStatusText(order.status) }}
@@ -63,58 +63,96 @@
         </div>
       </div>
 
-      <!-- Order Items -->
-      <div class="order-items">
-        <div *ngFor="let item of order.items" class="order-item">
-          <img [src]="item.image" [alt]="item.name" class="item-image" />
-          <div class="item-details">
-            <h4 class="item-name">{{ item.name }}</h4>
-            <div class="item-meta">
-              <span class="item-size" *ngIf="item.size">Size: {{ item.size }}</span>
-              <span class="item-quantity">Qty: {{ item.quantity }}</span>
-            </div>
-            <div class="item-price">₹{{ item.price * item.quantity }}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Order Summary -->
-      <div class="order-summary">
-        <div class="summary-row">
-          <span>Total Items:</span>
-          <span>{{ getTotalItems(order) }}</span>
-        </div>
-        <div class="summary-row">
-          <span>Total Amount:</span>
-          <span class="total-amount">₹{{ order.totalAmount }}</span>
-        </div>
-        <div class="summary-row" *ngIf="order.paymentMethod">
-          <span>Payment Method:</span>
-          <span>{{ order.paymentMethod }}</span>
-        </div>
-        <div class="summary-row" *ngIf="order.paymentStatus">
-          <span>Payment Status:</span>
-          <span [class]="'payment-' + order.paymentStatus">
-            {{ order.paymentStatus }}
+      <!-- Basic Order Summary - Always Visible -->
+      <div class="order-summary-basic">
+        <div class="basic-info">
+          <span class="product-name">{{ getFirstProductName(order) }}</span>
+          <span *ngIf="order.items.length > 1" class="additional-items">
+            +{{ order.items.length - 1 }} more item{{ order.items.length > 2 ? 's' : '' }}
           </span>
         </div>
+        <div class="basic-total">
+          Total: ₹{{ order.totalAmount }}
+        </div>
       </div>
 
-      <!-- Tracking Section -->
-      <div *ngIf="order.waybillNumber" class="tracking-section">
-        <div class="tracking-info">
-          <span class="tracking-label">Tracking Number:</span>
-          <span class="tracking-number">{{ order.waybillNumber }}</span>
+      <!-- Detailed Order Information - Expandable -->
+      <div *ngIf="isOrderExpanded(order._id)" class="order-details-expanded">
+        
+        <!-- Order Items -->
+        <div class="order-items">
+          <h4>Order Items</h4>
+          <div *ngFor="let item of order.items" class="order-item">
+            <img [src]="item.image" [alt]="item.name" class="item-image" />
+            <div class="item-details">
+              <h4 class="item-name">{{ item.name }}</h4>
+              <div class="item-meta">
+                <span class="item-size" *ngIf="item.size">Size: {{ item.size }}</span>
+                <span class="item-quantity">Qty: {{ item.quantity }}</span>
+              </div>
+              <div class="item-price">₹{{ item.price * item.quantity }}</div>
+            </div>
+          </div>
         </div>
-        <button class="btn-track" (click)="trackOrder(order.waybillNumber)">
-          Track Order
-        </button>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+          <h4>Order Summary</h4>
+          <div class="summary-row">
+            <span>Total Items:</span>
+            <span>{{ getTotalItems(order) }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Total Amount:</span>
+            <span class="total-amount">₹{{ order.totalAmount }}</span>
+          </div>
+          <div class="summary-row" *ngIf="order.paymentMethod">
+            <span>Payment Method:</span>
+            <span>{{ order.paymentMethod }}</span>
+          </div>
+          <div class="summary-row" *ngIf="order.paymentStatus">
+            <span>Payment Status:</span>
+            <span [class]="'payment-' + order.paymentStatus">
+              {{ order.paymentStatus }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Shipping Address -->
+        <div class="shipping-address" *ngIf="order.shippingAddress">
+          <h4>Shipping Address</h4>
+          <div class="address-details">
+            <p><strong>{{ order.shippingAddress.name }}</strong></p>
+            <p>{{ order.shippingAddress.address }}</p>
+            <p>{{ order.shippingAddress.city }}, {{ order.shippingAddress.state }} - {{ order.shippingAddress.pincode }}</p>
+            <p>Phone: {{ order.shippingAddress.phone }}</p>
+          </div>
+        </div>
+
+        <!-- Tracking Section -->
+        <div *ngIf="order.waybillNumber" class="tracking-section">
+          <h4>Tracking Information</h4>
+          <div class="tracking-info">
+            <span class="tracking-label">Tracking Number:</span>
+            <span class="tracking-number">{{ order.waybillNumber }}</span>
+          </div>
+          <button class="btn-track" (click)="trackOrder(order.waybillNumber)">
+            Track Order
+          </button>
+        </div>
+
+        <!-- Full Details Button -->
+        <div class="full-details-section">
+          <button class="btn-full-details" (click)="viewOrderDetails(order._id)">
+            View Full Order Details
+          </button>
+        </div>
       </div>
 
     </div>
   </div>
 
-  <!-- Load More Button (if pagination is implemented) -->
+  <!-- Load More Button -->
   <div *ngIf="orders.length > 0" class="load-more-section">
     <button class="btn-load-more" (click)="loadOrders()">
       Refresh Orders

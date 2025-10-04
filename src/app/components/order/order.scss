@@ -233,13 +233,13 @@
   }
 
   .btn-details {
-    background: #f8f9fa;
-    color: #333;
-    border: 1px solid #ddd;
+    background: #c1121f;
+    color: white;
+    border: 1px solid #c1121f;
 
     &:hover {
-      background: #e9ecef;
-      border-color: #999;
+      background: #a50e1a;
+      border-color: #a50e1a;
     }
   }
 }
@@ -298,12 +298,77 @@
   font-weight: 500;
 }
 
-// Order Items
-.order-items {
+// Basic Order Summary (Always Visible)
+.order-summary-basic {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .basic-info {
+    .product-name {
+      font-weight: 600;
+      color: #222;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .additional-items {
+      color: #666;
+      font-size: 0.9rem;
+    }
+  }
+
+  .basic-total {
+    font-weight: 700;
+    color: #c1121f;
+    font-size: 1.1rem;
+  }
+}
+
+// Expanded Order Details
+.order-details-expanded {
+  border-top: 1px solid #eee;
+  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+  animation: slideDown 0.3s ease-out;
+
+  h4 {
+    color: #222;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+  }
+}
+
+// Order Items in Expanded View
+.order-items {
+  margin-bottom: 2rem;
+
+  h4 {
+    color: #222;
+    margin-bottom: 1rem;
+  }
 }
 
 .order-item {
@@ -313,6 +378,7 @@
   background: #f8f9fa;
   border-radius: 12px;
   align-items: center;
+  margin-bottom: 1rem;
 
   @media (max-width: 480px) {
     flex-direction: column;
@@ -362,12 +428,16 @@
   }
 }
 
-// Order Summary
+// Order Summary in Expanded View
 .order-summary {
   background: #f8f9fa;
   padding: 1.5rem;
   border-radius: 12px;
   margin-bottom: 1.5rem;
+
+  h4 {
+    margin-top: 0;
+  }
 
   .summary-row {
     display: flex;
@@ -403,26 +473,46 @@
   }
 }
 
-// Tracking Section
-.tracking-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+// Shipping Address
+.shipping-address {
+  background: #f8f9fa;
   padding: 1.5rem;
-  background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
   border-radius: 12px;
-  flex-wrap: wrap;
-  gap: 1rem;
+  margin-bottom: 1.5rem;
 
-  @media (max-width: 480px) {
-    flex-direction: column;
-    text-align: center;
+  h4 {
+    margin-top: 0;
+  }
+
+  .address-details {
+    p {
+      margin: 0.25rem 0;
+      color: #333;
+
+      &:first-child {
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+// Tracking Section in Expanded View
+.tracking-section {
+  background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+
+  h4 {
+    margin-top: 0;
+    margin-bottom: 1rem;
   }
 
   .tracking-info {
     display: flex;
     align-items: center;
     gap: 1rem;
+    margin-bottom: 1rem;
     flex-wrap: wrap;
 
     .tracking-label {
@@ -455,6 +545,30 @@
       background: linear-gradient(135deg, #780000, #c1121f);
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(193, 18, 31, 0.3);
+    }
+  }
+}
+
+// Full Details Button
+.full-details-section {
+  text-align: center;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+
+  .btn-full-details {
+    background: transparent;
+    color: #c1121f;
+    border: 1px solid #c1121f;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #c1121f;
+      color: white;
+      transform: translateY(-2px);
     }
   }
 }

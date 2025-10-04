@@ -1,11 +1,10 @@
-// order.component.ts - Updated
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AuthService } from '../../services/auth.service'; // Import AuthService
+import { AuthService } from '../../services/auth.service';
 
 interface OrderItem {
   productId: string;
@@ -51,23 +50,22 @@ export class OrderComponent implements OnInit, OnDestroy {
   orders: Order[] = [];
   isLoading: boolean = true;
   error: string = '';
+  expandedOrderId: string | null = null; // Track which order is expanded
   private refreshInterval: any;
   currentUser: any;
 
   constructor(
     private http: HttpClient,
     private router: Router,
-    private authService: AuthService // Inject AuthService
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
-    // Get current user from auth service
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       this.loadOrders();
     });
 
-    // Refresh orders every 30 seconds for real-time updates
     this.refreshInterval = setInterval(() => {
       this.loadOrders();
     }, 30000);
@@ -81,8 +79,6 @@ export class OrderComponent implements OnInit, OnDestroy {
 
   loadOrders() {
     this.isLoading = true;
-    
-    // Use user email to fetch orders
     const userEmail = this.currentUser?.email;
     
     if (!userEmail) {
@@ -105,8 +101,6 @@ export class OrderComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Failed to load orders:', error);
-        
-        // Fallback: Try the generic user orders endpoint
         this.http.get<Order[]>(`${environment.apiUrl}/orders/user-orders?email=${userEmail}`)
           .subscribe({
             next: (orders) => {
@@ -123,7 +117,20 @@ export class OrderComponent implements OnInit, OnDestroy {
     });
   }
 
-  // ... rest of your methods remain the same
+  // Toggle order details view
+  toggleOrderDetails(orderId: string) {
+    if (this.expandedOrderId === orderId) {
+      this.expandedOrderId = null; // Collapse if already expanded
+    } else {
+      this.expandedOrderId = orderId; // Expand this order
+    }
+  }
+
+  // Check if order is expanded
+  isOrderExpanded(orderId: string): boolean {
+    return this.expandedOrderId === orderId;
+  }
+
   getStatusClass(status: string): string {
     switch (status) {
       case 'delivered': return 'status-delivered';
@@ -153,6 +160,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Navigate to detailed order page
   viewOrderDetails(orderId: string) {
     this.router.navigate(['/order-details', orderId]);
   }
@@ -162,7 +170,7 @@ export class OrderComponent implements OnInit, OnDestroy {
       this.http.post(`${environment.apiUrl}/orders/${orderId}/cancel`, {})
         .subscribe({
           next: () => {
-            this.loadOrders(); // Refresh the list
+            this.loadOrders();
           },
           error: (error) => {
             console.error('Failed to cancel order:', error);
@@ -186,5 +194,15 @@ export class OrderComponent implements OnInit, OnDestroy {
       month: 'short',
       year: 'numeric'
     });
+  }
+
+  // Get first product name for summary view
+  getFirstProductName(order: Order): string {
+    return order.items.length > 0 ? order.items[0].name : 'Product';
+  }
+
+  // Get total items count for summary
+  getTotalItemsCount(order: Order): number {
+    return this.getTotalItems(order);
   }
 }

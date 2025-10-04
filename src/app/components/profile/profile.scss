@@ -1,0 +1,553 @@
+// Variables
+$primary-color: #c1121f;
+$primary-dark: #a00d1a;
+$text-dark: #222;
+$text-light: #666;
+$border-color: #e0e0e0;
+$background-light: #f8f9fa;
+$white: #ffffff;
+$shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+$shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.15);
+
+// Mixins
+@mixin mobile {
+  @media (max-width: 768px) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (max-width: 1024px) {
+    @content;
+  }
+}
+
+// Loading Styles
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid $primary-color;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+  }
+
+  p {
+    color: $text-light;
+    font-size: 16px;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Main Container
+.profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+  background: $background-light;
+
+  @include mobile {
+    padding: 16px;
+  }
+}
+
+// Header
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid $border-color;
+
+  @include mobile {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .back-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: 1px solid $border-color;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: $text-dark;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: $white;
+      border-color: $primary-color;
+      color: $primary-color;
+    }
+
+    @include mobile {
+      align-self: flex-start;
+    }
+  }
+
+  h1 {
+    color: $text-dark;
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+
+    @include mobile {
+      font-size: 24px;
+      text-align: center;
+    }
+  }
+
+  .edit-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: $primary-color;
+    color: $white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+
+    &:hover {
+      background: $primary-dark;
+    }
+
+    @include mobile {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+// Profile Card
+.profile-card {
+  background: $white;
+  border-radius: 12px;
+  box-shadow: $shadow;
+  overflow: hidden;
+}
+
+// Profile Header Section
+.profile-header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px;
+  background: linear-gradient(135deg, $primary-color, $primary-dark);
+  color: $white;
+
+  @include mobile {
+    flex-direction: column;
+    gap: 20px;
+    padding: 24px 20px;
+    text-align: center;
+  }
+
+  .avatar-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    @include mobile {
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .avatar-large {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba($white, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 700;
+      border: 3px solid rgba($white, 0.3);
+    }
+
+    .avatar-info {
+      h2 {
+        margin: 0 0 4px 0;
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      p {
+        margin: 2px 0;
+        opacity: 0.9;
+        font-size: 14px;
+      }
+    }
+  }
+
+  .avatar-actions {
+    .btn-change-photo {
+      background: rgba($white, 0.2);
+      color: $white;
+      border: 1px solid rgba($white, 0.4);
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba($white, 0.3);
+      }
+    }
+  }
+}
+
+// Profile Tabs
+.profile-tabs {
+  display: flex;
+  background: $white;
+  border-bottom: 1px solid $border-color;
+
+  @include mobile {
+    flex-direction: column;
+  }
+
+  .tab-button {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 16px 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    color: $text-light;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+
+    @include mobile {
+      justify-content: flex-start;
+      padding: 12px 20px;
+    }
+
+    &:hover {
+      color: $primary-color;
+      background: rgba($primary-color, 0.05);
+    }
+
+    &.active {
+      color: $primary-color;
+      border-bottom-color: $primary-color;
+      background: rgba($primary-color, 0.05);
+    }
+
+    i {
+      font-size: 16px;
+    }
+  }
+}
+
+// Tab Content
+.tab-content {
+  padding: 32px;
+
+  @include mobile {
+    padding: 20px;
+  }
+}
+
+// Form Styles
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .form-group {
+    &.full-width {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.form-group {
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: $text-dark;
+    font-size: 14px;
+  }
+
+  .form-input,
+  .form-select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    }
+
+    &:disabled {
+      background: #f5f5f5;
+      color: $text-light;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Preferences
+.preferences-list {
+  .preference-item {
+    padding: 16px 0;
+    border-bottom: 1px solid $border-color;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  color: $text-dark;
+
+  input[type="checkbox"] {
+    display: none;
+  }
+
+  .checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid $border-color;
+    border-radius: 4px;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 1px;
+      width: 6px;
+      height: 10px;
+      border: solid $white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+  }
+
+  input[type="checkbox"]:checked + .checkmark {
+    background: $primary-color;
+    border-color: $primary-color;
+
+    &::after {
+      opacity: 1;
+    }
+  }
+
+  &:hover .checkmark {
+    border-color: $primary-color;
+  }
+}
+
+.preference-description {
+  margin: 4px 0 0 32px;
+  color: $text-light;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+// Form Actions
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid $border-color;
+
+  @include mobile {
+    flex-direction: column;
+  }
+
+  .btn-cancel {
+    padding: 12px 24px;
+    border: 1px solid $border-color;
+    background: $white;
+    color: $text-dark;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+
+    &:hover:not(:disabled) {
+      background: #f5f5f5;
+      border-color: $text-light;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .btn-save {
+    padding: 12px 32px;
+    background: $primary-color;
+    color: $white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+
+    &:hover:not(:disabled) {
+      background: $primary-dark;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Account Actions
+.account-actions {
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid $border-color;
+
+  h3 {
+    margin-bottom: 16px;
+    color: $text-dark;
+    font-size: 18px;
+  }
+
+  .btn-change-password {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #007bff;
+    color: $white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 12px;
+    transition: background 0.3s ease;
+
+    &:hover {
+      background: #0056b3;
+    }
+
+    @include mobile {
+      width: 100%;
+      margin-right: 0;
+      margin-bottom: 12px;
+      justify-content: center;
+    }
+  }
+
+  .btn-delete-account {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #dc3545;
+    color: $white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+
+    &:hover {
+      background: #c82333;
+    }
+
+    @include mobile {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+// Responsive Design Enhancements
+@media (max-width: 480px) {
+  .profile-container {
+    padding: 12px;
+  }
+
+  .profile-header-section {
+    padding: 20px 16px;
+  }
+
+  .tab-content {
+    padding: 16px;
+  }
+
+  .avatar-large {
+    width: 60px !important;
+    height: 60px !important;
+    font-size: 20px !important;
+  }
+
+  .avatar-info h2 {
+    font-size: 20px !important;
+  }
+}
+
+// Animation for smooth transitions
+.profile-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

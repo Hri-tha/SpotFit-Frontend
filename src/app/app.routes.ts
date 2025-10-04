@@ -4,6 +4,7 @@ import { LoginComponent } from './components/login/login';
 import { OrderSuccessComponent } from './components/order-success/order-success';
 import { OrderComponent } from './components/order/order';
 import { ProductListComponent } from './components/product-list/product-list';
+import { ProfileComponent } from './components/profile/profile';
 import { RegisterComponent } from './components/register/register';
 import { AdminGuard } from './guards/admin.guard';
 import { Routes } from '@angular/router';
@@ -16,5 +17,6 @@ export const routes: Routes = [
    { path: 'order-success', component: OrderSuccessComponent },
    { path: 'register', component: RegisterComponent }, 
    { path: 'orders', component: OrderComponent },
+   { path: 'profile', component: ProfileComponent },
   //  { path: 'order-details/:id', component: OrderDetailsComponent },
 ];

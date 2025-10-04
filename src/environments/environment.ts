@@ -2,6 +2,7 @@
 export const environment = {
   production: false,
   apiUrl: 'https://spotfit-backend-production.up.railway.app/api',
+  // apiUrl: 'http://localhost:4000/api',
   razorpayKeyId: 'rzp_live_RMdzh3tFYlmgp4',
   delhivery: {
     sellerName: 'SpotFit',
