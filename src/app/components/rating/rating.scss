@@ -1,0 +1,168 @@
+.rating-container {
+  font-family: 'Poppins', sans-serif;
+}
+
+.rating-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.stars {
+  display: flex;
+  gap: 2px;
+}
+
+.star {
+  font-size: 18px;
+  color: #ddd;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.star.filled {
+  color: #ffc107;
+}
+
+.star.editable {
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.star.editable:hover {
+  color: #ffc107;
+}
+
+.rating-text {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.btn-rate, .btn-edit {
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-rate:hover, .btn-edit:hover {
+  background: #e9ecef;
+  border-color: #c1121f;
+  color: #c1121f;
+}
+
+.user-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.your-rating {
+  font-size: 12px;
+  color: #666;
+}
+
+.rating-form {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.rating-form h4 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.stars-editable {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.review-textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.rating-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn-submit {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-submit:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: #218838;
+}
+
+.btn-cancel {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-cancel:hover {
+  background: #5a6268;
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .rating-display {
+    gap: 8px;
+  }
+  
+  .star {
+    font-size: 16px;
+  }
+  
+  .star.editable {
+    font-size: 20px;
+  }
+  
+  .rating-text {
+    font-size: 12px;
+  }
+  
+  .btn-rate, .btn-edit {
+    font-size: 11px;
+    padding: 3px 10px;
+  }
+  
+  .rating-form {
+    padding: 12px;
+  }
+  
+  .rating-form h4 {
+    font-size: 13px;
+  }
+}

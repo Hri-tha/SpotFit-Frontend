@@ -1,57 +1,8 @@
-// import { Injectable } from '@angular/core';
-// import { HttpClient } from '@angular/common/http';
-// import { environment } from '../../environments/environment';
-// import { Product } from '../models/product';
-// import { catchError, Observable, throwError } from 'rxjs';
-
-// @Injectable({ providedIn: 'root' })
-// export class ProductService {
-//   api = `${environment.apiUrl}/products`;
-  
-//   constructor(private http: HttpClient) {}
-
-//   getAll(): Observable<Product[]> {
-//     return this.http.get<Product[]>(this.api).pipe(
-//       catchError(error => {
-//         console.error('Error fetching products:', error);
-//         return throwError(() => new Error('Failed to fetch products'));
-//       })
-//     );
-//   }
-
-//   add(product: Partial<Product>, file?: File) {
-//     const form = new FormData();
-//     form.append('title', product.title || '');
-//     form.append('description', product.description || '');
-//     form.append('price', String(product.price ?? 0));
-//     if (product.type) form.append('type', product.type);
-
-
-//     if (product.category) form.append('category', product.category);
-//     if (file) {
-//       form.append('image', file);
-//     } else if (product.imageUrl) {
-//       form.append('imageUrl', product.imageUrl);
-//     }
-
-//     // ✅ Arrays (always stringify for backend)
-//     if (product.features) form.append('features', JSON.stringify(product.features));
-//     if (product.sizes) form.append('sizes', JSON.stringify(product.sizes));
-
-//     // ✅ Booleans & Numbers
-//     form.append('featured', String(product.featured ?? false));
-//     form.append('quantity', String(product.quantity ?? 0));
-//     form.append('discount', String(product.discount ?? 0));
-
-//     return this.http.post<Product>(this.api, form);
-//   }
-// }
-
-// services/product.service.ts - UPDATED
+// services/product.service.ts - PRODUCTION READY
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Product } from '../models/product';
+import { Product, UserRating } from '../models/product';
 import { catchError, Observable, throwError } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -69,7 +20,7 @@ export class ProductService {
     );
   }
 
-  // ✅ NEW: Get hero banners
+  // ✅ Get hero banners
   getHeroBanners(): Observable<Product[]> {
     return this.http.get<Product[]>(`${this.api}/banner/hero`);
   }
@@ -106,7 +57,7 @@ export class ProductService {
     return this.http.post<Product>(this.api, form);
   }
 
-  // ✅ NEW: Upload multiple images
+  // ✅ Upload multiple images
   uploadMultipleImages(files: File[]): Observable<{imageUrls: string[]}> {
     const form = new FormData();
     files.forEach(file => {
@@ -114,4 +65,27 @@ export class ProductService {
     });
     return this.http.post<{imageUrls: string[]}>(`${this.api}/upload-multiple`, form);
   }
+
+  // ✅ Submit rating for a product
+  submitRating(productId: string, ratingData: {
+    rating: number;
+    review?: string;
+    orderId: string;
+  }): Observable<Product> {
+    return this.http.post<Product>(`${this.api}/${productId}/rate`, ratingData);
+  }
+
+  // ✅ Get user's rating for a product
+  getUserRating(productId: string): Observable<UserRating | null> {
+    return this.http.get<UserRating | null>(`${this.api}/${productId}/user-rating`);
+  }
+
+  // ✅ Check if user can rate product
+  canUserRate(productId: string): Observable<{ canRate: boolean; orderId?: string }> {
+    return this.http.get<{ canRate: boolean; orderId?: string }>(
+      `${this.api}/${productId}/can-rate`
+    );
+  }
+
+  // ❌ REMOVED: simulateDelivery method (test only)
 }

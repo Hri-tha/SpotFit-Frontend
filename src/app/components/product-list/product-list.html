@@ -303,6 +303,10 @@
       <h3 class="title">{{ p.title }}</h3>
       <p class="description">{{ p.description }}</p>
 
+      <app-rating *ngIf="p._id && !p.heroBanner" [productId]="p._id" [averageRating]="p.averageRating || 0"
+        [totalRatings]="p.totalRatings || 0" (ratingSubmitted)="onRatingSubmitted()">
+      </app-rating>
+
       <!-- ✅ Price -->
       <div class="price-section" *ngIf="p.discount && p.discount > 0; else noDiscount">
         <span class="old-price">₹{{ p.price }}</span>
@@ -340,7 +344,7 @@
       </div>
 
       <!-- ✅ Buy Now Button -->
-      <button class="btn-buy-now" (click)="openSizeModal(p, true)" [disabled]="p.quantity === 0">
+      <button class="btn-buy-now" (click)="buyNow(p)" [disabled]="p.quantity === 0">
         Buy Now
       </button>
     </div>
@@ -356,13 +360,13 @@
         <img src="Screen_Sorrt.png" alt="SpotFit Logo" />
         <span>Spot<span>Fit</span></span>
       </div>
-      
+
       <p class="about-description">
-        SpotFit is your premier destination for premium fitness apparel and footwear. 
-        We believe that great performance starts with great gear. Our products are 
+        SpotFit is your premier destination for premium fitness apparel and footwear.
+        We believe that great performance starts with great gear. Our products are
         designed to help you push your limits and achieve your fitness goals in style.
       </p>
-      
+
       <div class="about-stats">
         <div class="stat-item">
           <span class="stat-number">10K+</span>
@@ -384,7 +388,7 @@
       <h3>Quick Links</h3>
       <ul>
         <li>
-          <a href="/products" (click)="$event.preventDefault(); goToProducts()">
+          <a href="/sale" (click)="$event.preventDefault(); goToProducts()">
             <i class="fas fa-tshirt"></i>All Products
           </a>
         </li>
@@ -426,14 +430,14 @@
           </div>
           <span>123 Fitness Street, Gym District<br>Mumbai, Maharashtra 400001</span>
         </div>
-        
+
         <div class="contact-item">
           <div class="contact-icon">
             <i class="fas fa-phone"></i>
           </div>
           <span>+91 98765 43210<br>Mon-Sat: 9AM-6PM</span>
         </div>
-        
+
         <div class="contact-item">
           <div class="contact-icon">
             <i class="fas fa-envelope"></i>
@@ -441,7 +445,7 @@
           <span>support@spotfit.com<br>orders@spotfit.com</span>
         </div>
       </div>
-      
+
       <div class="social-links">
         <a href="#" class="social-link" title="Facebook">
           <i class="fab fa-facebook-f"></i>

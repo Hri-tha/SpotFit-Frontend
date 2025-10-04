@@ -7,11 +7,12 @@ import { CommonModule } from '@angular/common';
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service'; 
 import { Subscription } from 'rxjs';
+import { RatingComponent } from '../rating/rating';
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RatingComponent],
   templateUrl: './product-list.html',
   styleUrls: ['./product-list.scss'],
 })
@@ -431,7 +432,12 @@ scrollToProducts(): void {
   }
 
   buyNow(product: Product) {
-    this.openSizeModal(product, true);
+    if (this.cartCount === 0) {
+    this.openSizeModal(product, true); // true = isBuyNowMode
+  } else {
+    // If cart has items, go directly to checkout
+    this.router.navigate(['/checkout']);
+  }
   }
 
   getCartQuantity(product: Product): number {
@@ -467,6 +473,11 @@ scrollToProducts(): void {
     } else {
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
+  }
+
+  onRatingSubmitted() {
+    console.log('Rating submitted successfully');
+    // Optional: You can refresh products or show a toast notification here
   }
 
   toggleMenu() {

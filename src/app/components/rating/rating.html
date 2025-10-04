@@ -1,0 +1,59 @@
+<!-- rating.html - PRODUCTION READY -->
+<div class="rating-container">
+  <!-- Display Rating -->
+  <div *ngIf="!isEditing" class="rating-display">
+    <div class="stars">
+      <span *ngFor="let star of [1,2,3,4,5]" 
+            class="star" 
+            [class.filled]="star <= (userRating?.rating || averageRating || 0)"
+            (click)="startRating()">
+        ★
+      </span>
+    </div>
+    <span class="rating-text">
+      {{ (averageRating || 0).toFixed(1) }}
+      <span *ngIf="totalRatings">({{ totalRatings }})</span>
+      <span *ngIf="!totalRatings">(No ratings)</span>
+    </span>
+    
+    <!-- Rate Button for eligible users -->
+    <button *ngIf="canRate && !userRating" class="btn-rate" (click)="startRating()">
+      Rate Product
+    </button>
+    
+    <!-- User's Rating -->
+    <div *ngIf="userRating" class="user-rating">
+      <span class="your-rating">Your rating: {{ userRating.rating }}/5</span>
+      <button class="btn-edit" (click)="startRating()">Edit</button>
+    </div>
+  </div>
+
+  <!-- Rating Form -->
+  <div *ngIf="isEditing" class="rating-form">
+    <h4>Rate this product</h4>
+    <div class="stars-editable">
+      <span *ngFor="let star of [1,2,3,4,5]" 
+            class="star editable"
+            [class.filled]="star <= tempRating"
+            (mouseenter)="tempRating = star"
+            (click)="finalRating = star">
+        ★
+      </span>
+    </div>
+    
+    <textarea 
+      *ngIf="finalRating > 0"
+      [(ngModel)]="tempReview" 
+      placeholder="Write your review (optional)"
+      class="review-textarea"
+      rows="3">
+    </textarea>
+    
+    <div class="rating-actions" *ngIf="finalRating > 0">
+      <button class="btn-submit" (click)="submitRating()" [disabled]="submitting">
+        {{ submitting ? 'Submitting...' : 'Submit Rating' }}
+      </button>
+      <button class="btn-cancel" (click)="cancelRating()">Cancel</button>
+    </div>
+  </div>
+</div>
