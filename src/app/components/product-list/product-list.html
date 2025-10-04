@@ -24,12 +24,30 @@
 
   <!-- Normal nav links (hidden on mobile) -->
   <ul class="nav-links desktop-only">
-    <li (click)="filterByType('Lower')">Lower</li>
-    <li (click)="filterByType('Sando')">Sando</li>
-    <li (click)="filterByType('T-Shirt')">T-Shirt</li>
-    <li (click)="filterByType('Nikker')">Nikker</li>
-    <li (click)="filterByType('New Arrivals')">New Arrivals</li>
-    <li (click)="resetFilter()">All</li>
+    <li (click)="filterByType('Lower')">
+      <img src="Lower.png" alt="Lower" class="category-logo" onerror="this.style.display='none'">
+      Lower
+    </li>
+    <li (click)="filterByType('Sando')">
+      <img src="Sando.png" alt="Sando" class="category-logo" onerror="this.style.display='none'">
+      Sando
+    </li>
+    <li (click)="filterByType('T-Shirt')">
+      <img src="T-Shirt.png" alt="T-Shirt" class="category-logo" onerror="this.style.display='none'">
+      T-Shirt
+    </li>
+    <li (click)="filterByType('Nikker')">
+      <img src="Nikker.png" alt="Nikker" class="category-logo" onerror="this.style.display='none'">
+      Nikker
+    </li>
+    <li (click)="filterByType('New Arrivals')">
+      <img src="New-Arrivals.png" alt="Nikker" class="category-logo" onerror="this.style.display='none'">
+      New Arrivals
+    </li>
+    <li (click)="resetFilter()">
+      <img src="All-Section.png" alt="Nikker" class="category-logo" onerror="this.style.display='none'">
+      All
+    </li>
   </ul>
 
   <button class="btn-buy-now" (click)="handleBuyNow()">
@@ -56,17 +74,19 @@
       <!-- User Dropdown Menu -->
       <div class="user-dropdown">
         <div class="user-dropdown-item" (click)="goToProfile()">
-          <i class="fas fa-user"></i>
-          My Profile
+          <img src="My-Profile.png" alt="My Profile" class="dropdown-icon" onerror="this.style.display='none'">
+          <span class="dropdown-text">My Profile</span>
         </div>
+
         <div class="user-dropdown-item" (click)="goToOrders()">
-          <i class="fas fa-shopping-bag"></i>
-          My Orders
+          <img src="My-Order.png" alt="My Orders" class="dropdown-icon" onerror="this.style.display='none'">
+          <span class="dropdown-text">My Orders</span>
         </div>
+
         <div class="user-dropdown-divider"></div>
         <div class="user-dropdown-item" (click)="logout()">
-          <i class="fas fa-sign-out-alt"></i>
-          Logout
+          <img src="Logout.png" alt="Logout" class="dropdown-icon" onerror="this.style.display='none'">
+          <span class="dropdown-text">Logout</span>
         </div>
       </div>
     </div>
@@ -87,30 +107,53 @@
   </div>
 
   <ul>
-    <li (click)="filterByTypeAndClose('Lower')"><i class="fas fa-tshirt"></i> Lower</li>
-    <li (click)="filterByTypeAndClose('Sando')"><i class="fas fa-vest"></i> Sando</li>
-    <li (click)="filterByTypeAndClose('T-Shirt')"><i class="fas fa-tshirt"></i> T-Shirt</li>
-    <li (click)="filterByTypeAndClose('Nikker')"><i class="fas fa-shoe-prints"></i> Nikker</li>
-    <li (click)="filterByTypeAndClose('New Arrivals')"><i class="fas fa-star"></i> New Arrivals</li>
-    <li (click)="resetFilterAndClose()"><i class="fas fa-boxes"></i> All Products</li>
+    <li (click)="filterByTypeAndClose('Lower')">
+      <img src="Lower.png" alt="Lower" class="mobile-category-logo" onerror="this.style.display='none'">
+      Lower
+    </li>
+    <li (click)="filterByTypeAndClose('Sando')">
+      <img src="Sando.png" alt="Sando" class="mobile-category-logo" onerror="this.style.display='none'">
+      Sando
+    </li>
+    <li (click)="filterByTypeAndClose('T-Shirt')">
+      <img src="T-Shirt.png" alt="T-Shirt" class="mobile-category-logo" onerror="this.style.display='none'">
+      T-Shirt
+    </li>
+    <li (click)="filterByTypeAndClose('Nikker')">
+      <img src="Nikker.png" alt="Nikker" class="mobile-category-logo" onerror="this.style.display='none'">
+      Nikker
+    </li>
+    <li (click)="filterByTypeAndClose('New Arrivals')">
+      <img src="New-Arrivals.png" alt="Nikker" class="mobile-category-logo" onerror="this.style.display='none'">
+      New Arrivals
+    </li>
+    <li (click)="resetFilterAndClose()">
+      <img src="All-Section.png" alt="Nikker" class="mobile-category-logo" onerror="this.style.display='none'">
+      All Products
+    </li>
 
     <!-- Show login or user profile based on auth state -->
     <li *ngIf="!isLoggedIn" (click)="goLoginAndClose()">
-      <i class="fas fa-user"></i> Login
+      <img src="Login.png" alt="Nikker" class="mobile-category-logo" onerror="this.style.display='none'">
+      Login
     </li>
 
     <li *ngIf="isLoggedIn" (click)="goToProfileAndClose()">
-      <i class="fas fa-user"></i> My Profile
+      <img src="My-Profile.png" alt="Nikker" class="mobile-category-logo" onerror="this.style.display='none'">
+      My Profile
     </li>
     <li *ngIf="isLoggedIn" (click)="goToOrdersAndClose()">
-      <i class="fas fa-shopping-bag"></i> My Orders
+      <img src="My-Order.png" alt="Nikker" class="mobile-category-logo" onerror="this.style.display='none'">
+      My Orders
     </li>
     <li *ngIf="isLoggedIn" (click)="logoutAndClose()">
-      <i class="fas fa-sign-out-alt"></i> Logout
+      <img src="Logout.png" alt="Nikker" class="mobile-category-logo" onerror="this.style.display='none'">
+      Logout
     </li>
 
     <li (click)="goToCartAndClose()">
-      <i class="fas fa-shopping-cart"></i> Cart ({{ cartCount }})
+      <i class="fas fa-shopping-cart"></i>
+      Cart ({{ cartCount }})
     </li>
   </ul>
 </div>
@@ -351,9 +394,9 @@
   </div>
 </div>
 
-<!-- ✅ About Section -->
 <footer class="about-section">
   <div class="about-container">
+    
     <!-- Brand Section -->
     <div class="about-brand">
       <div class="about-logo">
@@ -388,33 +431,39 @@
       <h3>Quick Links</h3>
       <ul>
         <li>
-          <a href="/sale" (click)="$event.preventDefault(); goToProducts()">
-            <i class="fas fa-tshirt"></i>All Products
+          <a href="#" (click)="$event.preventDefault(); goToProducts()">
+            <img src="All-Section.png" alt="All Products" class="footer-icon" onerror="this.style.display='none'" />
+            <span class="footer-link-text">All Products</span>
           </a>
         </li>
         <li>
-          <a href="/new-arrivals" (click)="$event.preventDefault(); filterByType('New Arrivals')">
-            <i class="fas fa-star"></i>New Arrivals
+          <a href="#" (click)="$event.preventDefault(); filterByType('New Arrivals')">
+            <img src="New-Arrivals.png" alt="New Arrivals" class="footer-icon" onerror="this.style.display='none'" />
+            <span class="footer-link-text">New Arrivals</span>
           </a>
         </li>
         <li>
-          <a href="/sale" (click)="$event.preventDefault(); goToSale()">
-            <i class="fas fa-tag"></i>Sale Items
+          <a href="#" (click)="$event.preventDefault(); goToSale()">
+            <img src="Sale-Item.png" alt="Sale Items" class="footer-icon" onerror="this.style.display='none'" />
+            <span class="footer-link-text">Sale Items</span>
           </a>
         </li>
         <li>
-          <a href="/size-guide" (click)="$event.preventDefault(); openSizeGuide()">
-            <i class="fas fa-ruler"></i>Size Guide
+          <a href="#" (click)="$event.preventDefault(); openSizeGuide()">
+            <img src="SizeGuide.png" alt="Size Guide" class="footer-icon" onerror="this.style.display='none'" />
+            <span class="footer-link-text">Size Guide</span>
           </a>
         </li>
         <li>
-          <a href="/shipping" (click)="$event.preventDefault(); goToShipping()">
-            <i class="fas fa-shipping-fast"></i>Shipping Info
+          <a href="#" (click)="$event.preventDefault(); goToShipping()">
+            <img src="ShippingInfo.png" alt="Shipping Info" class="footer-icon" onerror="this.style.display='none'" />
+            <span class="footer-link-text">Shipping Info</span>
           </a>
         </li>
         <li>
-          <a href="/returns" (click)="$event.preventDefault(); goToReturns()">
-            <i class="fas fa-exchange-alt"></i>Return Policy
+          <a href="#" (click)="$event.preventDefault(); goToReturns()">
+            <img src="ReturnPolicy.png" alt="Return Policy" class="footer-icon" onerror="this.style.display='none'" />
+            <span class="footer-link-text">Return Policy</span>
           </a>
         </li>
       </ul>
@@ -426,41 +475,52 @@
       <div class="contact-info">
         <div class="contact-item">
           <div class="contact-icon">
-            <i class="fas fa-map-marker-alt"></i>
+            <img src="ContractUs.png" alt="Location" class="contact-icon-img" onerror="this.style.display='none'" />
           </div>
-          <span>123 Fitness Street, Gym District<br>Mumbai, Maharashtra 400001</span>
+          <div class="contact-text">
+            <span class="contact-main">123 Fitness Street, Gym District</span>
+            <span class="contact-sub">Mumbai, Maharashtra 400001</span>
+          </div>
         </div>
 
         <div class="contact-item">
           <div class="contact-icon">
-            <i class="fas fa-phone"></i>
+            <img src="Phone-Number.png" alt="Phone" class="contact-icon-img" onerror="this.style.display='none'" />
           </div>
-          <span>+91 98765 43210<br>Mon-Sat: 9AM-6PM</span>
+          <div class="contact-text">
+            <span class="contact-main">+91 98765 43210</span>
+            <span class="contact-sub">Mon-Sat: 9AM - 6PM</span>
+          </div>
         </div>
 
         <div class="contact-item">
           <div class="contact-icon">
-            <i class="fas fa-envelope"></i>
+            <img src="Email.png" alt="Email" class="contact-icon-img" onerror="this.style.display='none'" />
           </div>
-          <span>support@spotfit.com<br>orders@spotfit.com</span>
+          <div class="contact-text">
+            <span class="contact-main">support@spotfit.com</span>
+            <span class="contact-sub">orders@spotfit.com</span>
+          </div>
         </div>
-      </div>
-
-      <div class="social-links">
-        <a href="#" class="social-link" title="Facebook">
-          <i class="fab fa-facebook-f"></i>
-        </a>
-        <a href="#" class="social-link" title="Instagram">
-          <i class="fab fa-instagram"></i>
-        </a>
-        <a href="#" class="social-link" title="Twitter">
-          <i class="fab fa-twitter"></i>
-        </a>
-        <a href="#" class="social-link" title="YouTube">
-          <i class="fab fa-youtube"></i>
-        </a>
       </div>
     </div>
+
+    <!-- Social Links -->
+    <div class="social-links">
+      <a href="#" class="social-link" title="Facebook">
+        <img src="Facebook.png" alt="Facebook" class="social-icon" onerror="this.style.display='none'" />
+      </a>
+      <a href="#" class="social-link" title="Instagram">
+        <img src="Instagram.png" alt="Instagram" class="social-icon" onerror="this.style.display='none'" />
+      </a>
+      <a href="#" class="social-link" title="Twitter">
+        <img src="Twitter.png" alt="Twitter" class="social-icon" onerror="this.style.display='none'" />
+      </a>
+      <a href="#" class="social-link" title="YouTube">
+        <img src="YouTube.png" alt="YouTube" class="social-icon" onerror="this.style.display='none'" />
+      </a>
+    </div>
+
   </div>
 
   <!-- Copyright -->
