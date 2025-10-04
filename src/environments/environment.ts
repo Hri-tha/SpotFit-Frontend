@@ -1,7 +1,7 @@
 // environment.ts
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:4000/api',
+  apiUrl: 'https://spotfit-backend-production.up.railway.app/api',
   razorpayKeyId: 'rzp_live_RMdzh3tFYlmgp4',
   delhivery: {
     sellerName: 'SpotFit',
