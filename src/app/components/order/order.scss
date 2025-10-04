@@ -1,0 +1,483 @@
+// order.scss
+.orders-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  min-height: 70vh;
+
+  @media (max-width: 768px) {
+    padding: 1rem 0.5rem;
+  }
+}
+
+.orders-header {
+  text-align: center;
+  margin-bottom: 3rem;
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 0.5rem;
+
+    @media (max-width: 768px) {
+      font-size: 2rem;
+    }
+  }
+
+  p {
+    color: #666;
+    font-size: 1.1rem;
+  }
+}
+
+// Loading State
+.loading-container {
+  text-align: center;
+  padding: 4rem 2rem;
+
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #c1121f;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+  }
+
+  p {
+    color: #666;
+    font-size: 1.1rem;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Error State
+.error-container {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #ffebee;
+  border-radius: 12px;
+  margin: 2rem 0;
+
+  .error-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    color: #c1121f;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: #666;
+    margin-bottom: 1.5rem;
+  }
+
+  .btn-retry {
+    background: #c1121f;
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #a50e1a;
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// Empty State
+.empty-orders {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #f8f9fa;
+  border-radius: 16px;
+  margin: 2rem 0;
+
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  h2 {
+    color: #222;
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+  }
+
+  p {
+    color: #666;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .btn-shop-now {
+    background: linear-gradient(135deg, #c1121f, #780000);
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(193, 18, 31, 0.3);
+
+    &:hover {
+      background: linear-gradient(135deg, #780000, #c1121f);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(193, 18, 31, 0.4);
+    }
+  }
+}
+
+// Orders List
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.order-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    margin: 0 0.5rem;
+  }
+}
+
+// Order Header
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.order-info {
+  .order-id {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 0.5rem;
+  }
+
+  .order-date {
+    color: #666;
+    font-size: 0.95rem;
+  }
+}
+
+.order-actions {
+  display: flex;
+  gap: 1rem;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  button {
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+
+    @media (max-width: 480px) {
+      text-align: center;
+    }
+  }
+
+  .btn-cancel {
+    background: #ffebee;
+    color: #c1121f;
+    border: 1px solid #c1121f;
+
+    &:hover {
+      background: #c1121f;
+      color: white;
+    }
+  }
+
+  .btn-details {
+    background: #f8f9fa;
+    color: #333;
+    border: 1px solid #ddd;
+
+    &:hover {
+      background: #e9ecef;
+      border-color: #999;
+    }
+  }
+}
+
+// Order Status
+.order-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &.status-delivered {
+    background: #e8f5e8;
+    color: #2e7d32;
+  }
+
+  &.status-shipped {
+    background: #e3f2fd;
+    color: #1565c0;
+  }
+
+  &.status-confirmed {
+    background: #fff3e0;
+    color: #ef6c00;
+  }
+
+  &.status-pending {
+    background: #f5f5f5;
+    color: #666;
+  }
+
+  &.status-cancelled {
+    background: #ffebee;
+    color: #c1121f;
+  }
+}
+
+.delivery-date {
+  color: #666;
+  font-weight: 500;
+}
+
+// Order Items
+.order-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.order-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  align-items: center;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.item-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #eee;
+
+  @media (max-width: 480px) {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+.item-details {
+  flex: 1;
+
+  .item-name {
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  .item-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+
+    span {
+      color: #666;
+      font-size: 0.9rem;
+    }
+  }
+
+  .item-price {
+    font-weight: 700;
+    color: #c1121f;
+    font-size: 1.1rem;
+  }
+}
+
+// Order Summary
+.order-summary {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .total-amount {
+      font-weight: 700;
+      color: #c1121f;
+      font-size: 1.2rem;
+    }
+
+    .payment-paid {
+      color: #2e7d32;
+      font-weight: 600;
+    }
+
+    .payment-pending {
+      color: #ef6c00;
+      font-weight: 600;
+    }
+
+    .payment-failed {
+      color: #c1121f;
+      font-weight: 600;
+    }
+  }
+}
+
+// Tracking Section
+.tracking-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+  border-radius: 12px;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .tracking-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+
+    .tracking-label {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .tracking-number {
+      background: white;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-family: monospace;
+      font-weight: 600;
+      color: #c1121f;
+      border: 1px solid #ddd;
+    }
+  }
+
+  .btn-track {
+    background: linear-gradient(135deg, #c1121f, #780000);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: linear-gradient(135deg, #780000, #c1121f);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(193, 18, 31, 0.3);
+    }
+  }
+}
+
+// Load More Section
+.load-more-section {
+  text-align: center;
+  margin-top: 3rem;
+
+  .btn-load-more {
+    background: #f8f9fa;
+    color: #333;
+    border: 1px solid #ddd;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #e9ecef;
+      border-color: #999;
+      transform: translateY(-2px);
+    }
+  }
+}

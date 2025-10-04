@@ -357,7 +357,7 @@ export class CheckoutComponent implements OnInit {
         },
         prefill: {
           name: this.selectedAddress.fullName,
-          email: 'customer@example.com',
+          email: this.authService.currentUser$.value?.email || 'customer@example.com',
           contact: this.selectedAddress.phone
         },
         notes: {
@@ -436,14 +436,21 @@ private async createOrderInDatabase(orderId: string, paymentId: string) {
       throw new Error('No address available for order');
     }
 
+    // Get current user from auth service
+    const currentUser = this.authService.currentUser$.value;
+    const userEmail = currentUser?.email || 'customer@example.com'; // Fallback to hardcoded only if no user
+    
+    console.log('👤 Using user email for order:', userEmail);
+
     const orderData = {
       orderId: orderId,
       paymentId: paymentId,
       amount: this.getFinalTotal(),
       currency: 'INR',
       customer: {
+        userId: currentUser?.id, // Add user ID if available
         name: this.selectedAddress.fullName,
-        email: 'customer@example.com', // You can get this from auth service
+        email: userEmail, // ✅ Use actual user email
         phone: this.selectedAddress.phone
       },
       shippingAddress: {
@@ -463,12 +470,12 @@ private async createOrderInDatabase(orderId: string, paymentId: string) {
         discountedPrice: this.getDiscountedPrice(item.product),
         quantity: item.quantity,
         size: item.size,
-        imageUrl: item.product.imageUrl
+        imageUrl: item.product.imageUrl || item.product.images?.[0] || 'assets/placeholder-image.jpg'
       }))
     };
 
     const response = await this.http.post(`${environment.apiUrl}/orders/create`, orderData).toPromise();
-    console.log('✅ Order created in database:', response);
+    console.log('✅ Order created in database with user email:', userEmail, response);
     
   } catch (error) {
     console.error('❌ Failed to create order in database:', error);

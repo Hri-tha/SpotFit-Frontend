@@ -5,7 +5,7 @@ import { ProductService } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
 import { CommonModule } from '@angular/common';
 import { SeoService } from '../../services/seo.service';
-import { AuthService } from '../../services/auth.service'; 
+import { AuthService } from '../../services/auth.service';
 import { Subscription } from 'rxjs';
 import { RatingComponent } from '../rating/rating';
 
@@ -57,7 +57,7 @@ export class ProductListComponent implements OnInit {
       this.cartCount = items.reduce((sum, i) => sum + i.quantity, 0);
     });
 
-     this.authSubscription = this.authService.currentUser$.subscribe(user => {
+    this.authSubscription = this.authService.currentUser$.subscribe(user => {
       this.isLoggedIn = !!user;
       this.currentUser = user;
       console.log('Auth state changed:', { isLoggedIn: this.isLoggedIn, user: this.currentUser });
@@ -96,6 +96,8 @@ export class ProductListComponent implements OnInit {
       clearInterval(this.bannerInterval);
     }
   }
+
+
 
   // ✅ Open Size Modal - FIXED
   openSizeModal(product: Product, isBuyNow: boolean = false) {
@@ -148,9 +150,8 @@ export class ProductListComponent implements OnInit {
   }
 
   goToOrders(): void {
+    this.router.navigate(['/orders']);
     this.userDropdownOpen = false;
-    // Navigate to orders page
-    console.log('Navigate to orders');
   }
 
   logout(): void {
@@ -167,36 +168,36 @@ export class ProductListComponent implements OnInit {
   }
 
   goToProducts(): void {
-  this.resetFilter();
-  this.router.navigate(['/']);
-}
-
-goToSale(): void {
-  // Filter products with discount
-  this.normalProducts = this.allProducts.filter(p => 
-    p.discount && p.discount > 0 && !p.featured
-  );
-  this.featuredProduct = this.allProducts.find(p => 
-    p.discount && p.discount > 0 && p.featured
-  );
-  this.scrollToProducts();
-}
-
-goToShipping(): void {
-  // You can create a shipping info page or show a modal
-  alert('Shipping Information:\n\n• Standard Delivery: 3-5 business days\n• Express Delivery: 1-2 business days\n• Free shipping on orders above ₹999\n• Cash on Delivery available');
-}
-
-goToReturns(): void {
-  alert('Return Policy:\n\n• 30-day return policy\n• Items must be unused with tags\n• Free returns for defective products\n• Refund processed within 7 business days');
-}
-
-scrollToProducts(): void {
-  const productsSection = document.querySelector('.product-container');
-  if (productsSection) {
-    productsSection.scrollIntoView({ behavior: 'smooth' });
+    this.resetFilter();
+    this.router.navigate(['/']);
   }
-}
+
+  goToSale(): void {
+    // Filter products with discount
+    this.normalProducts = this.allProducts.filter(p =>
+      p.discount && p.discount > 0 && !p.featured
+    );
+    this.featuredProduct = this.allProducts.find(p =>
+      p.discount && p.discount > 0 && p.featured
+    );
+    this.scrollToProducts();
+  }
+
+  goToShipping(): void {
+    // You can create a shipping info page or show a modal
+    alert('Shipping Information:\n\n• Standard Delivery: 3-5 business days\n• Express Delivery: 1-2 business days\n• Free shipping on orders above ₹999\n• Cash on Delivery available');
+  }
+
+  goToReturns(): void {
+    alert('Return Policy:\n\n• 30-day return policy\n• Items must be unused with tags\n• Free returns for defective products\n• Refund processed within 7 business days');
+  }
+
+  scrollToProducts(): void {
+    const productsSection = document.querySelector('.product-container');
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
 
   goToOrdersAndClose(): void {
     this.closeMenu();
@@ -433,11 +434,11 @@ scrollToProducts(): void {
 
   buyNow(product: Product) {
     if (this.cartCount === 0) {
-    this.openSizeModal(product, true); // true = isBuyNowMode
-  } else {
-    // If cart has items, go directly to checkout
-    this.router.navigate(['/checkout']);
-  }
+      this.openSizeModal(product, true); // true = isBuyNowMode
+    } else {
+      // If cart has items, go directly to checkout
+      this.router.navigate(['/checkout']);
+    }
   }
 
   getCartQuantity(product: Product): number {

@@ -2,6 +2,7 @@ import { AddProductComponent } from './components/admin/add-product/add-product'
 import { CheckoutComponent } from './components/checkout/checkout';
 import { LoginComponent } from './components/login/login';
 import { OrderSuccessComponent } from './components/order-success/order-success';
+import { OrderComponent } from './components/order/order';
 import { ProductListComponent } from './components/product-list/product-list';
 import { RegisterComponent } from './components/register/register';
 import { AdminGuard } from './guards/admin.guard';
@@ -14,4 +15,6 @@ export const routes: Routes = [
    { path: 'checkout', component: CheckoutComponent },
    { path: 'order-success', component: OrderSuccessComponent },
    { path: 'register', component: RegisterComponent }, 
+   { path: 'orders', component: OrderComponent },
+  //  { path: 'order-details/:id', component: OrderDetailsComponent },
 ];

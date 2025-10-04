@@ -1,0 +1,123 @@
+<!-- order.html -->
+<div class="orders-page">
+  <!-- Header -->
+  <div class="orders-header">
+    <h1>My Orders</h1>
+    <p *ngIf="orders.length > 0">Track and manage your orders</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading your orders...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="error-container">
+    <div class="error-icon">⚠️</div>
+    <h3>Unable to load orders</h3>
+    <p>{{ error }}</p>
+    <button class="btn-retry" (click)="loadOrders()">Try Again</button>
+  </div>
+
+  <!-- Empty State (No Orders) -->
+  <div *ngIf="!isLoading && !error && orders.length === 0" class="empty-orders">
+    <div class="empty-icon">📦</div>
+    <h2>No Orders Yet</h2>
+    <p>You haven't placed any orders. Start shopping to see your orders here!</p>
+    <button class="btn-shop-now" (click)="continueShopping()">
+      Start Shopping
+    </button>
+  </div>
+
+  <!-- Orders List -->
+  <div *ngIf="!isLoading && orders.length > 0" class="orders-list">
+    <div *ngFor="let order of orders" class="order-card">
+      
+      <!-- Order Header -->
+      <div class="order-header">
+        <div class="order-info">
+          <div class="order-id">Order #{{ order.orderId }}</div>
+          <div class="order-date">Placed on {{ formatDate(order.createdAt) }}</div>
+        </div>
+        <div class="order-actions">
+          <button 
+            *ngIf="order.status === 'pending' || order.status === 'confirmed'" 
+            class="btn-cancel" 
+            (click)="cancelOrder(order._id)">
+            Cancel Order
+          </button>
+          <button class="btn-details" (click)="viewOrderDetails(order._id)">
+            View Details
+          </button>
+        </div>
+      </div>
+
+      <!-- Order Status -->
+      <div class="order-status">
+        <div class="status-badge" [class]="getStatusClass(order.status)">
+          {{ getStatusText(order.status) }}
+        </div>
+        <div *ngIf="order.expectedDelivery" class="delivery-date">
+          Expected delivery: {{ formatDate(order.expectedDelivery) }}
+        </div>
+      </div>
+
+      <!-- Order Items -->
+      <div class="order-items">
+        <div *ngFor="let item of order.items" class="order-item">
+          <img [src]="item.image" [alt]="item.name" class="item-image" />
+          <div class="item-details">
+            <h4 class="item-name">{{ item.name }}</h4>
+            <div class="item-meta">
+              <span class="item-size" *ngIf="item.size">Size: {{ item.size }}</span>
+              <span class="item-quantity">Qty: {{ item.quantity }}</span>
+            </div>
+            <div class="item-price">₹{{ item.price * item.quantity }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="order-summary">
+        <div class="summary-row">
+          <span>Total Items:</span>
+          <span>{{ getTotalItems(order) }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Total Amount:</span>
+          <span class="total-amount">₹{{ order.totalAmount }}</span>
+        </div>
+        <div class="summary-row" *ngIf="order.paymentMethod">
+          <span>Payment Method:</span>
+          <span>{{ order.paymentMethod }}</span>
+        </div>
+        <div class="summary-row" *ngIf="order.paymentStatus">
+          <span>Payment Status:</span>
+          <span [class]="'payment-' + order.paymentStatus">
+            {{ order.paymentStatus }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Tracking Section -->
+      <div *ngIf="order.waybillNumber" class="tracking-section">
+        <div class="tracking-info">
+          <span class="tracking-label">Tracking Number:</span>
+          <span class="tracking-number">{{ order.waybillNumber }}</span>
+        </div>
+        <button class="btn-track" (click)="trackOrder(order.waybillNumber)">
+          Track Order
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Load More Button (if pagination is implemented) -->
+  <div *ngIf="orders.length > 0" class="load-more-section">
+    <button class="btn-load-more" (click)="loadOrders()">
+      Refresh Orders
+    </button>
+  </div>
+</div>
