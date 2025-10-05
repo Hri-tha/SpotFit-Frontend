@@ -11,5 +11,6 @@ export const environment = {
     sellerPincode: '110089',
     sellerState: 'Delhi',
     sellerPhone: '9137532150'
-  }
+  },
+  googleClientId: '522601168090-sa10slo3426u4689pt49salsi784tcbe.apps.googleusercontent.com',
 };

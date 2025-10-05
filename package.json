@@ -33,6 +33,7 @@
     "@angular/platform-browser-dynamic": "^20.3.0",
     "@angular/router": "^20.3.0",
     "bootstrap": "^5.3.8",
+    "google-auth-library": "^10.4.0",
     "razorpay": "^2.9.6",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
