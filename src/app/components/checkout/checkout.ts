@@ -50,6 +50,10 @@ export class CheckoutComponent implements OnInit {
   ngOnInit() {
     this.loadCartData();
     this.loadAddressData();
+    this.cartService.cart$.subscribe(() => {
+    this.loadCartData();
+  });
+
     this.seoService.setSeoData({
       title: 'Checkout - Secure Payment | SpotFit Gym Wear',
       description: 'Complete your gym wear purchase securely. Multiple payment options available including UPI, Credit Card, and Debit Card.',
@@ -85,7 +89,7 @@ export class CheckoutComponent implements OnInit {
 
   getDiscountedPrice(product: any): number {
     return product.discount && product.discount > 0
-      ? Math.round(product.price - (product.price * product.discount) / 100)
+      ? Math.floor(product.price - (product.price * product.discount) / 100)
       : product.price;
   }
 
@@ -94,7 +98,7 @@ export class CheckoutComponent implements OnInit {
   }
 
   getFinalTotal(): number {
-    const deliveryCharge = this.totalAmount >= 500 ? 0 : 0;
+    const deliveryCharge = this.totalAmount >= 999 ? 0 : 49;
     return this.totalAmount + deliveryCharge;
   }
 
@@ -590,4 +594,54 @@ private async createOrderInDatabase(orderId: string, paymentId: string) {
       this.isLoading = false;
     }
   }
+
+  increaseQuantity(index: number): void {
+  const item = this.cartItems[index];
+  
+  // Check stock availability
+  if (item.quantity >= item.product.quantity) {
+    alert(`Only ${item.product.quantity} items available in stock!`);
+    return;
+  }
+  
+  this.cartService.updateQuantity(
+    item.product._id, 
+    item.size || '', 
+    item.quantity + 1
+  );
+  
+  // Refresh cart data to reflect changes
+  this.loadCartData();
+}
+
+decreaseQuantity(index: number): void {
+  const item = this.cartItems[index];
+  
+  if (item.quantity > 1) {
+    this.cartService.updateQuantity(
+      item.product._id, 
+      item.size || '', 
+      item.quantity - 1
+    );
+    
+    // Refresh cart data to reflect changes
+    this.loadCartData();
+  }
+}
+
+getProductImage(product: any): string {
+  // Priority 1: Use first image from images array if available
+  if (product.images && product.images.length > 0) {
+    return product.images[0];
+  }
+  
+  // Priority 2: Use imageUrl if available
+  if (product.imageUrl) {
+    return product.imageUrl;
+  }
+  
+  // Priority 3: Fallback to placeholder image
+  return 'assets/placeholder-image.jpg';
+}
+
 }

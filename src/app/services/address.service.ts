@@ -16,7 +16,7 @@ export class AddressService {
   }
 
   private loadAddresses() {
-    // Try to load from localStorage
+    // Load from localStorage
     const savedAddresses = localStorage.getItem('spotfit_addresses');
     const selectedAddressId = localStorage.getItem('spotfit_selected_address');
     
@@ -35,30 +35,8 @@ export class AddressService {
         this.selectedAddressSubject.next(defaultAddress);
         localStorage.setItem('spotfit_selected_address', defaultAddress.id!);
       }
-    } else {
-      // Load from browser autofill if available (simplified)
-      this.tryGetBrowserAddress();
     }
-  }
-
-  private tryGetBrowserAddress() {
-    // This is a simplified version - in a real app, you'd use more advanced techniques
-    // or ask the user to enter their address
-    const placeholderAddress: Address = {
-      id: 'placeholder',
-      fullName: 'Your Name',
-      phone: 'Your Phone Number',
-      addressLine1: 'Your Address Line 1',
-      city: 'Your City',
-      state: 'Your State',
-      pincode: 'Your Pincode',
-      country: 'India',
-      isDefault: true,
-      type: 'home'
-    };
-    
-    this.addresses = [placeholderAddress];
-    this.selectedAddressSubject.next(placeholderAddress);
+    // No else case - if no addresses exist, we'll start with empty array
   }
 
   getAddresses(): Address[] {
@@ -119,5 +97,10 @@ export class AddressService {
 
   private saveAddresses() {
     localStorage.setItem('spotfit_addresses', JSON.stringify(this.addresses));
+  }
+
+  // Helper method to check if user has any addresses
+  hasAddresses(): boolean {
+    return this.addresses.length > 0;
   }
 }

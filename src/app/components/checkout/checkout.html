@@ -77,36 +77,57 @@
         </span>
         <span *ngIf="isLoading">Processing...</span>
       </button>
+
       <!-- Order Summary Section -->
-      <div class="order-summary">
-        <h2>Order Summary</h2>
-        <div class="order-items">
-          <div *ngFor="let item of cartItems" class="order-item">
-            <div class="item-image">
-              <img [src]="item.product.imageUrl" [alt]="item.product.title">
-            </div>
-            <div class="item-details">
-              <h3>{{ item.product.title }}</h3>
-              <p *ngIf="item.size" class="item-size">Size: {{ item.size }}</p>
+<div class="order-summary">
+  <h2>Order Summary</h2>
+  <div class="order-items">
+    <div *ngFor="let item of cartItems; let i = index" class="order-item">
+      <div class="item-image">
+        <img [src]="getProductImage(item.product)" [alt]="item.product.title">
+      </div>
+      <div class="item-details">
+        <h3>{{ item.product.title }}</h3>
+        <p *ngIf="item.size" class="item-size">Size: {{ item.size }}</p>
 
-              <!-- Show discounted price and original price if discounted -->
-              <div class="price-section" *ngIf="item.product.discount && item.product.discount > 0; else noDiscount">
-                <span class="old-price">₹{{ formatCurrency(item.product.price) }}</span>
-                <span class="new-price">₹{{ formatCurrency(getDiscountedPrice(item.product)) }}</span>
-                <span class="discount-tag">-{{ item.product.discount }}%</span>
-              </div>
-              <ng-template #noDiscount>
-                <span class="new-price">₹{{ formatCurrency(item.product.price) }}</span>
-              </ng-template>
+        <!-- Show discounted price and original price if discounted -->
+        <div class="price-section" *ngIf="item.product.discount && item.product.discount > 0; else noDiscount">
+          <span class="old-price">₹{{ formatCurrency(item.product.price) }}</span>
+          <span class="new-price">₹{{ formatCurrency(getDiscountedPrice(item.product)) }}</span>
+          <span class="discount-tag">-{{ item.product.discount }}%</span>
+        </div>
+        <ng-template #noDiscount>
+          <span class="new-price">₹{{ formatCurrency(item.product.price) }}</span>
+        </ng-template>
 
-              <div class="item-quantity">Quantity: {{ item.quantity }}</div>
-            </div>
-            <div class="item-total">
-              ₹{{ formatCurrency(getDiscountedPrice(item.product) * item.quantity) }}
-            </div>
-          </div>
+        <!-- Quantity Controls -->
+        <div class="quantity-controls">
+          <button 
+            class="quantity-btn decrease" 
+            (click)="decreaseQuantity(i)"
+            [disabled]="item.quantity <= 1">
+            −
+          </button>
+          <span class="quantity-display">{{ item.quantity }}</span>
+          <button 
+            class="quantity-btn increase" 
+            (click)="increaseQuantity(i)"
+            [disabled]="item.quantity >= item.product.quantity">
+            +
+          </button>
+        </div>
+
+        <!-- Old quantity display (hidden but kept for reference) -->
+        <div class="item-quantity" style="display: none;">
+          Quantity: {{ item.quantity }}
         </div>
       </div>
+      <div class="item-total">
+        ₹{{ formatCurrency(getDiscountedPrice(item.product) * item.quantity) }}
+      </div>
+    </div>
+  </div>
+</div>
     </div>
 
     <!-- Right column: Payment summary -->
@@ -129,7 +150,7 @@
 
         <div *ngIf="totalAmount < 1000" class="summary-row">
           <span class="free-delivery-note">
-            Add ₹{{ formatCurrency(1000 - totalAmount) }} more for FREE delivery
+            Add ₹{{ formatCurrency(999 - totalAmount) }} more for FREE delivery
           </span>
         </div>
 
@@ -152,10 +173,3 @@
     </div>
   </div>
 </div>
-
-<!-- Add this to your checkout.html -->
-<!-- <div class="test-section" *ngIf="!isLoading">
-  <button (click)="testDelhiveryShipment()" class="btn-test">
-    Test Delhivery Shipment
-  </button>
-</div> -->
