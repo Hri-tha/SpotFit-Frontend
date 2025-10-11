@@ -3,6 +3,12 @@
   display: flex;
   flex-direction: column;
   min-width: 400px;
+  
+  // Mobile responsiveness
+  @media (max-width: 768px) {
+    min-width: auto;
+    width: 100%;
+  }
 }
 
 .form-row {
@@ -16,9 +22,85 @@
     display: flex;
     gap: 16px;
     margin-top: 8px;
+    
+    // Mobile responsiveness for radio buttons
+    @media (max-width: 480px) {
+      flex-direction: column;
+      gap: 8px;
+    }
   }
   
   mat-checkbox {
     margin-top: 8px;
+  }
+}
+
+// Mobile-specific styles
+@media (max-width: 768px) {
+  .mat-dialog-container {
+    max-width: 95vw !important;
+    width: 95vw !important;
+    margin: 10px !important;
+    
+    .mat-dialog-content {
+      max-height: 70vh !important;
+      padding: 10px !important;
+    }
+    
+    .mat-dialog-actions {
+      padding: 10px !important;
+      flex-wrap: wrap;
+      
+      button {
+        flex: 1;
+        min-width: 120px;
+        margin: 5px;
+      }
+    }
+  }
+}
+
+// Extra small devices
+@media (max-width: 480px) {
+  .form-row {
+    margin-bottom: 12px;
+    
+    mat-form-field {
+      .mat-form-field-wrapper {
+        margin-bottom: 0.5em;
+      }
+    }
+  }
+  
+  .mat-dialog-title {
+    font-size: 1.2rem !important;
+    padding: 10px 16px 0 16px !important;
+  }
+  
+  .mat-dialog-content {
+    margin: 0 !important;
+    padding: 10px !important;
+  }
+  
+  .mat-dialog-actions {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+      margin: 5px 0 !important;
+    }
+  }
+}
+
+// Ensure dialog doesn't overflow on very small screens
+@media (max-width: 320px) {
+  .mat-dialog-container {
+    max-width: 98vw !important;
+    width: 98vw !important;
+    margin: 5px !important;
+  }
+  
+  .address-form {
+    min-width: unset;
   }
 }

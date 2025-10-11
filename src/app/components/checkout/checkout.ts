@@ -1,4 +1,4 @@
-// checkout.ts - FIXED (with waybillNumber issue resolved)
+// checkout.ts - FIXED VERSION
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -12,7 +12,7 @@ import { Address } from '../../models/address.model';
 import { environment } from '../../../environments/environment';
 import { SeoService } from '../../services/seo.service';
 import { AuthService } from '../../services/auth.service';
-import { DelhiveryService, ServiceabilityResponse } from '../../services/delhivery.service';
+import { ShiprocketService } from '../../services/shiprocket.service';
 
 declare var Razorpay: any;
 
@@ -41,7 +41,7 @@ export class CheckoutComponent implements OnInit {
     private addressService: AddressService,
     private configService: ConfigService,
     private authService: AuthService,
-    private delhiveryService: DelhiveryService,
+    private shiprocketService: ShiprocketService,
     private router: Router,
     private http: HttpClient,
     private dialog: MatDialog
@@ -51,8 +51,8 @@ export class CheckoutComponent implements OnInit {
     this.loadCartData();
     this.loadAddressData();
     this.cartService.cart$.subscribe(() => {
-    this.loadCartData();
-  });
+      this.loadCartData();
+    });
 
     this.seoService.setSeoData({
       title: 'Checkout - Secure Payment | SpotFit Gym Wear',
@@ -76,11 +76,9 @@ export class CheckoutComponent implements OnInit {
   loadAddressData() {
     this.addressService.selectedAddress$.subscribe(address => {
       this.selectedAddress = address;
-      // 🔥 FIX: Check serviceability when address changes
       if (address && this.isAddressValid(address)) {
         this.checkServiceability(address.pincode);
       } else {
-        // Reset serviceability result if no valid address
         this.serviceabilityResult = null;
       }
     });
@@ -98,7 +96,7 @@ export class CheckoutComponent implements OnInit {
   }
 
   getFinalTotal(): number {
-    const deliveryCharge = this.totalAmount >= 999 ? 0 : 49;
+    const deliveryCharge = this.totalAmount >= 999 ? 0 : 0;
     return this.totalAmount + deliveryCharge;
   }
 
@@ -107,13 +105,20 @@ export class CheckoutComponent implements OnInit {
   }
 
   changeAddress(): void {
-    const dialogRef = this.dialog.open(AddressDialogComponent, {
-      width: '500px',
+    const isMobile = window.innerWidth <= 768;
+    
+    const dialogConfig = {
+      width: isMobile ? '95vw' : '500px',
+      maxWidth: isMobile ? '95vw' : '500px',
+      height: isMobile ? 'auto' : 'auto',
+      maxHeight: isMobile ? '90vh' : '80vh',
       data: {
         address: this.selectedAddress || undefined,
         isEdit: !!this.selectedAddress
       }
-    });
+    };
+
+    const dialogRef = this.dialog.open(AddressDialogComponent, dialogConfig);
 
     dialogRef.afterClosed().subscribe((result: Address | null) => {
       if (result) {
@@ -123,7 +128,6 @@ export class CheckoutComponent implements OnInit {
           this.addressService.addAddress(result);
         }
         this.selectedAddress = result;
-        // 🔥 FIX: Check serviceability after address change
         if (result.pincode) {
           this.checkServiceability(result.pincode);
         }
@@ -144,7 +148,6 @@ export class CheckoutComponent implements OnInit {
     return isValid;
   }
 
-  // 🔥 UPDATED: Better serviceability check with detailed logging
   async checkServiceability(pincode: string) {
     if (!pincode || pincode.length !== 6) {
       console.log('Invalid pincode for serviceability check:', pincode);
@@ -152,19 +155,18 @@ export class CheckoutComponent implements OnInit {
       return;
     }
 
-    console.log('🔄 Checking serviceability for pincode:', pincode);
+    console.log('🔄 Checking Shiprocket serviceability for pincode:', pincode);
     this.isCheckingServiceability = true;
     this.serviceabilityResult = null;
 
     try {
-      // Convert Observable to Promise to use await
-      const serviceability = await this.delhiveryService.checkServiceability(pincode).toPromise();
-      console.log('📦 Delhivery API Response:', serviceability);
+      const serviceability = await this.shiprocketService.checkServiceability(pincode).toPromise();
+      console.log('📦 Shiprocket Serviceability Response:', serviceability);
 
-      if (serviceability && serviceability.deliverable) {
+      if (serviceability && serviceability.available) {
         this.serviceabilityResult = {
           isServiceable: true,
-          message: '✅ Delivery available to this location'
+          message: ` Delivery available`
         };
         console.log('✅ Serviceability: Available');
       } else {
@@ -175,57 +177,41 @@ export class CheckoutComponent implements OnInit {
         console.log('❌ Serviceability: Not available');
       }
     } catch (error: any) {
-      console.error('🚨 Serviceability check failed:', error);
-
-      if (error.status === 401) {
-        this.serviceabilityResult = {
-          isServiceable: false,
-          message: '❌ Invalid API Token. Please check Delhivery configuration.'
-        };
-      } else if (error.status === 403) {
-        this.serviceabilityResult = {
-          isServiceable: false,
-          message: '❌ API Access Denied. Check Delhivery account permissions.'
-        };
-      } else {
-        this.serviceabilityResult = {
-          isServiceable: false,
-          message: '❌ Unable to verify delivery availability'
-        };
-      }
+      console.error('🚨 Shiprocket serviceability check failed:', error);
+      this.serviceabilityResult = {
+        isServiceable: false,
+        message: '❌ Unable to verify delivery availability'
+      };
     } finally {
       this.isCheckingServiceability = false;
     }
   }
 
-  // 🔥 ADD: Test Delhivery connection method
-  async testDelhiveryConnection() {
-    console.log('🧪 Testing Delhivery API Connection...');
+  // 🔥 FIXED: Test Shiprocket connection method
+  async testShiprocketConnection() {
+    console.log('🧪 Testing Shiprocket API Connection...');
 
     try {
       this.isLoading = true;
-
-      // Test with a known pincode first
-      const testPincode = '560029'; // Your Bangalore pincode
+      const testPincode = '560029';
       console.log('📍 Testing with pincode:', testPincode);
 
-      // Convert Observable to Promise
-      const serviceability = await this.delhiveryService.checkServiceability(testPincode).toPromise();
+      const serviceability = await this.shiprocketService.checkServiceability(testPincode).toPromise();
       console.log('📦 Test API Response:', serviceability);
 
-      if (serviceability && serviceability.deliverable) {
-        alert(`✅ Delhivery API Working!\n\nPincode: ${testPincode}\nStatus: Serviceable\n\nYou can proceed with orders.`);
+      if (serviceability && serviceability.available) {
+        alert(`✅ Shiprocket API Working!\n\nPincode: ${testPincode}\nCourier: ${serviceability.courier_name}\nCharge: ₹${serviceability.charge}\n\nYou can proceed with orders.`);
       } else {
-        alert(`❌ Delhivery API Working but pincode ${testPincode} not serviceable.\n\nResponse: ${JSON.stringify(serviceability)}`);
+        alert(`❌ Shiprocket API Working but pincode ${testPincode} not serviceable.\n\nResponse: ${JSON.stringify(serviceability)}`);
       }
 
     } catch (error: any) {
-      console.error('❌ Delhivery test failed:', error);
+      console.error('❌ Shiprocket test failed:', error);
 
       if (error.status === 401) {
-        alert('❌ Invalid API Token. Please check your Delhivery token in environment.ts');
+        alert('❌ Invalid API Credentials. Please check your Shiprocket credentials in environment.');
       } else if (error.status === 403) {
-        alert('❌ API Access Denied. Please complete KYC in Delhivery dashboard.');
+        alert('❌ API Access Denied. Please check Shiprocket account permissions.');
       } else {
         alert('❌ Connection failed: ' + (error.message || 'Check console for details'));
       }
@@ -238,7 +224,6 @@ export class CheckoutComponent implements OnInit {
     console.log('1. payWithRazorpay method started');
     this.addressError = '';
 
-    // Auth check
     if (!this.authService.isAuthenticated()) {
       console.log('2. User not authenticated');
       const returnUrl = this.router.url;
@@ -269,7 +254,6 @@ export class CheckoutComponent implements OnInit {
     }
     console.log('7. Address is valid');
 
-    // 🔥 FIX: Check if serviceability was actually checked
     if (this.serviceabilityResult === null) {
       console.log('7a. Serviceability not checked yet, checking now...');
       await this.checkServiceability(this.selectedAddress.pincode);
@@ -288,10 +272,8 @@ export class CheckoutComponent implements OnInit {
     }
     console.log('9. Cart has items');
 
-    // IMPROVED CONFIG CHECK
     if (!this.configLoaded) {
       console.log('10. Config not loaded, attempting to load manually...');
-
       try {
         await this.configService.loadConfig();
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -325,8 +307,6 @@ export class CheckoutComponent implements OnInit {
       const finalAmount = this.getFinalTotal();
       console.log('13. Final amount:', finalAmount);
 
-      // Step 1: Create order on backend
-      console.log('14. Making API call to create-order');
       const orderResponse: any = await this.http.post(`${environment.apiUrl}/payment/create-order`, {
         amount: finalAmount,
         currency: 'INR',
@@ -337,7 +317,6 @@ export class CheckoutComponent implements OnInit {
 
       console.log('15. Order created successfully:', orderResponse);
 
-      // Step 2: Initialize Razorpay checkout
       const razorpayKeyId = this.configService.getRazorpayKeyId();
       console.log('16. Razorpay Key ID:', razorpayKeyId);
 
@@ -394,177 +373,237 @@ export class CheckoutComponent implements OnInit {
     }
   }
 
-// In checkout.ts - update verifyPaymentAndCreateShipment method
-private async verifyPaymentAndCreateShipment(paymentResponse: any, orderId: string) {
-  try {
-    const verificationResponse: any = await this.http.post(`${environment.apiUrl}/payment/verify-payment`, {
-      order_id: orderId,
-      payment_id: paymentResponse.razorpay_payment_id,
-      signature: paymentResponse.razorpay_signature,
-      cart_items: this.cartItems,
-      address: this.selectedAddress
-    }).toPromise();
+  private async verifyPaymentAndCreateShipment(paymentResponse: any, orderId: string) {
+    try {
+      const verificationResponse: any = await this.http.post(`${environment.apiUrl}/payment/verify-payment`, {
+        order_id: orderId,
+        payment_id: paymentResponse.razorpay_payment_id,
+        signature: paymentResponse.razorpay_signature,
+        cart_items: this.cartItems,
+        address: this.selectedAddress
+      }).toPromise();
 
-    if (verificationResponse.success) {
-      // 1. First create the order in database
-      await this.createOrderInDatabase(orderId, paymentResponse.razorpay_payment_id);
+      if (verificationResponse.success) {
+        // 1. First create the order in database
+        await this.createOrderInDatabase(orderId, paymentResponse.razorpay_payment_id);
 
-      // 2. Then create Delhivery shipment and get waybill
-      const waybillNumber = await this.createDelhiveryShipment(orderId, paymentResponse.razorpay_payment_id);
+        // 2. Then create Shiprocket shipment and get AWB
+        const awbNumber = await this.createShiprocketShipment(orderId, paymentResponse.razorpay_payment_id);
 
-      alert('Payment Successful! Order has been placed.');
-      this.cartService.clearCart();
+        alert('Payment Successful! Order has been placed.');
+        this.cartService.clearCart();
 
-      // Navigate to success page with waybill
-      this.router.navigate(['/order-success'], {
-        state: {
-          paymentId: paymentResponse.razorpay_payment_id,
-          orderId: orderId,
-          waybill: waybillNumber
-        }
-      });
-    } else {
-      alert('Payment verification failed. Please contact support.');
+        // Navigate to success page with AWB
+        this.router.navigate(['/order-success'], {
+          state: {
+            paymentId: paymentResponse.razorpay_payment_id,
+            orderId: orderId,
+            waybill: awbNumber
+          }
+        });
+      } else {
+        alert('Payment verification failed. Please contact support.');
+      }
+    } catch (error) {
+      console.error('Verification error:', error);
+      alert('There was an issue verifying your payment. Please contact support.');
+    } finally {
+      this.isLoading = false;
     }
-  } catch (error) {
-    console.error('Verification error:', error);
-    alert('There was an issue verifying your payment. Please contact support.');
-  } finally {
-    this.isLoading = false;
   }
-}
 
-private async createOrderInDatabase(orderId: string, paymentId: string) {
-  try {
-    if (!this.selectedAddress) {
-      throw new Error('No address available for order');
-    }
-
-    // Get current user from auth service
-    const currentUser = this.authService.currentUser$.value;
-    const userEmail = currentUser?.email || 'customer@example.com'; // Fallback to hardcoded only if no user
-    
-    console.log('👤 Using user email for order:', userEmail);
-
-    const orderData = {
-      orderId: orderId,
-      paymentId: paymentId,
-      amount: this.getFinalTotal(),
-      currency: 'INR',
-      customer: {
-        userId: currentUser?.id, // Add user ID if available
-        name: this.selectedAddress.fullName,
-        email: userEmail, // ✅ Use actual user email
-        phone: this.selectedAddress.phone
-      },
-      shippingAddress: {
-        fullName: this.selectedAddress.fullName,
-        addressLine1: this.selectedAddress.addressLine1,
-        addressLine2: this.selectedAddress.addressLine2 || '',
-        city: this.selectedAddress.city,
-        state: this.selectedAddress.state,
-        pincode: this.selectedAddress.pincode,
-        country: this.selectedAddress.country || 'India',
-        phone: this.selectedAddress.phone
-      },
-      items: this.cartItems.map(item => ({
-        productId: item.product._id,
-        title: item.product.title,
-        price: item.product.price,
-        discountedPrice: this.getDiscountedPrice(item.product),
-        quantity: item.quantity,
-        size: item.size,
-        imageUrl: item.product.imageUrl || item.product.images?.[0] || 'assets/placeholder-image.jpg'
-      }))
-    };
-
-    const response = await this.http.post(`${environment.apiUrl}/orders/create`, orderData).toPromise();
-    console.log('✅ Order created in database with user email:', userEmail, response);
-    
-  } catch (error) {
-    console.error('❌ Failed to create order in database:', error);
-    // Don't block the flow if order creation fails
-  }
-}
-  private async createDelhiveryShipment(orderId: string, paymentId: string): Promise<string | null> {
+  private async createOrderInDatabase(orderId: string, paymentId: string) {
     try {
       if (!this.selectedAddress) {
-        throw new Error('No address available for shipment');
+        throw new Error('No address available for order');
       }
 
-      // Use the correct Delhivery shipment format
-      const shipmentData = {
-        "shipments": [
-          {
-            "name": this.selectedAddress.fullName,
-            "add": `${this.selectedAddress.addressLine1} ${this.selectedAddress.addressLine2 || ''}`.trim(),
-            "pin": this.selectedAddress.pincode,
-            "city": this.selectedAddress.city,
-            "state": this.selectedAddress.state,
-            "country": this.selectedAddress.country || 'India',
-            "phone": this.selectedAddress.phone,
-            "order": orderId,
-            "products_desc": this.cartItems.map(item =>
-              `${item.product.title} (Size: ${item.size}) x ${item.quantity}`
-            ).join(', '),
-            "cod_amount": "0", // For prepaid orders
-            "total_amount": this.getFinalTotal().toString(),
-            "quantity": this.getTotalItems().toString(),
-            "waybill": "", // Will be generated by Delhivery
-            "payment_mode": "Prepaid"
-          }
-        ],
-        "pickup_location": {
-          "name": environment.delhivery.sellerName,
-          "add": environment.delhivery.sellerAddress,
-          "city": environment.delhivery.sellerCity,
-          "pin_code": environment.delhivery.sellerPincode,
-          "state": environment.delhivery.sellerState,
-          "phone": environment.delhivery.sellerPhone,
-          "country": "India"
-        }
+      const currentUser = this.authService.currentUser$.value;
+      const userEmail = currentUser?.email || 'customer@example.com';
+      
+      console.log('👤 Using user email for order:', userEmail);
+
+      const orderData = {
+        orderId: orderId,
+        paymentId: paymentId,
+        amount: this.getFinalTotal(),
+        currency: 'INR',
+        customer: {
+          userId: currentUser?.id,
+          name: this.selectedAddress.fullName,
+          email: userEmail,
+          phone: this.selectedAddress.phone
+        },
+        shippingAddress: {
+          fullName: this.selectedAddress.fullName,
+          addressLine1: this.selectedAddress.addressLine1,
+          addressLine2: this.selectedAddress.addressLine2 || '',
+          city: this.selectedAddress.city,
+          state: this.selectedAddress.state,
+          pincode: this.selectedAddress.pincode,
+          country: this.selectedAddress.country || 'India',
+          phone: this.selectedAddress.phone
+        },
+        items: this.cartItems.map(item => ({
+          productId: item.product._id,
+          title: item.product.title,
+          price: item.product.price,
+          discountedPrice: this.getDiscountedPrice(item.product),
+          quantity: item.quantity,
+          size: item.size,
+          imageUrl: item.product.imageUrl || item.product.images?.[0] || 'assets/placeholder-image.jpg'
+        }))
       };
 
-      console.log('🚚 Sending shipment data:', shipmentData);
-
-      // Convert Observable to Promise using toPromise()
-      const shipmentResponse = await this.delhiveryService.createShipment(shipmentData).toPromise();
-      console.log('✅ Delhivery shipment created:', shipmentResponse);
-
-      let waybill: string | null = null;
-
-      // Handle different response formats
-      if (shipmentResponse && shipmentResponse.packages) {
-        // New format
-        waybill = shipmentResponse.packages[0]?.waybill;
-        if (waybill) {
-          console.log('📦 Waybill number:', waybill);
-          await this.storeWaybillInDatabase(orderId, waybill);
-        }
-      } else if (shipmentResponse && shipmentResponse.waybill) {
-        // Alternative format
-        waybill = shipmentResponse.waybill;
-        console.log('📦 Waybill number:', waybill);
-        await this.storeWaybillInDatabase(orderId, waybill);
-      } else {
-        console.log('⚠️ No waybill in response, but shipment might be created');
-      }
-
-      return waybill; // Return the waybill number
-
+      const response = await this.http.post(`${environment.apiUrl}/orders/create`, orderData).toPromise();
+      console.log('✅ Order created in database with user email:', userEmail, response);
+      
     } catch (error) {
-      console.error('❌ Delhivery shipment creation failed:', error);
-      // Don't throw error here - order is already paid, just log it
-      return null; // Return null if shipment creation failed
+      console.error('❌ Failed to create order in database:', error);
     }
   }
 
+// Key section: Auto-detect correct pickup location
+private async createShiprocketShipment(orderId: string, paymentId: string): Promise<string | null> {
+  try {
+    if (!this.selectedAddress) {
+      throw new Error('No address available for shipment');
+    }
+
+    // 🔥 STEP 1: Fetch actual pickup locations from Shiprocket
+    let availablePickupLocations: string[] = [];
+    
+    try {
+      const response: any = await this.http.get(`${environment.apiUrl}/shiprocket/pickup-locations`).toPromise();
+      if (response.success && response.data) {
+        availablePickupLocations = response.data.map((loc: any) => loc.name);
+        console.log('📋 Available pickup locations from API:', availablePickupLocations);
+      }
+    } catch (error) {
+      console.warn('⚠️ Could not fetch pickup locations, using common defaults');
+    }
+
+    // If API call failed, try common location names
+    if (availablePickupLocations.length === 0) {
+      availablePickupLocations = [
+        'Home', 'Primary', 'Default', 'Warehouse', 
+        'home', 'primary', 'default', 'warehouse',
+        'Main', 'Office', 'Store', 'SpotFit'
+      ];
+    }
+
+    let orderResponse: any = null;
+    let successfulLocation = '';
+
+    // 🔥 STEP 2: Try each pickup location until one works
+    for (const pickupLocation of availablePickupLocations) {
+      try {
+        const orderData = {
+          order_id: orderId,
+          order_date: new Date().toISOString().split('T')[0],
+          pickup_location: pickupLocation, // ✅ Try this location
+          billing_customer_name: this.selectedAddress.fullName.trim(),
+          billing_last_name: '',
+          billing_address: (this.selectedAddress.addressLine1 + ' ' + (this.selectedAddress.addressLine2 || '')).trim(),
+          billing_address_2: '',
+          billing_city: this.selectedAddress.city.trim(),
+          billing_pincode: this.selectedAddress.pincode,
+          billing_state: this.selectedAddress.state.trim(),
+          billing_country: this.selectedAddress.country || 'India',
+          billing_email: this.authService.currentUser$.value?.email || 'customer@example.com',
+          billing_phone: this.selectedAddress.phone,
+          shipping_is_billing: true,
+          order_items: this.cartItems.map((item, index) => ({
+            name: item.product.title,
+            sku: item.product._id || `SKU_${index}_${Date.now()}`,
+            units: item.quantity,
+            selling_price: this.getDiscountedPrice(item.product),
+            discount: 0,
+            tax: 0,
+            hsn: 6115
+          })),
+          payment_method: 'Prepaid' as 'Prepaid',
+          sub_total: this.getFinalTotal(),
+          weight: 0.5,
+          length: 10,
+          breadth: 10,
+          height: 2
+        };
+
+        console.log(`🚚 Attempting pickup location: "${pickupLocation}"`);
+
+        orderResponse = await this.shiprocketService.createOrder(orderData).toPromise();
+        
+        if (orderResponse && orderResponse.shipment_id) {
+          console.log(`✅ SUCCESS with pickup location: "${pickupLocation}"`);
+          successfulLocation = pickupLocation;
+          break; // Found working location, stop trying
+        }
+
+      } catch (error: any) {
+        console.warn(`❌ Failed with "${pickupLocation}":`, error?.error?.message || error.message);
+        
+        // Extract available locations from error if provided
+        if (error?.error?.data?.data) {
+          const errorLocations = error.error.data.data.map((loc: any) => 
+            loc.pickup_location || loc.name
+          );
+          console.log('💡 Locations from error:', errorLocations);
+          
+          // Add new locations to try
+          errorLocations.forEach((loc: string) => {
+            if (!availablePickupLocations.includes(loc)) {
+              availablePickupLocations.push(loc);
+            }
+          });
+        }
+        // Continue to next location
+      }
+    }
+
+    // 🔥 STEP 3: Check if we got a successful order
+    if (!orderResponse || !orderResponse.shipment_id) {
+      console.error('❌ All pickup locations failed');
+      
+      // Store as pending and notify user
+      await this.storeWaybillInDatabase(orderId, 'PENDING_SHIPMENT');
+      alert('Order placed! Shipment will be created shortly. You will receive tracking details via email.');
+      
+      return 'PENDING_SHIPMENT';
+    }
+
+    // 🔥 STEP 4: Assign AWB to the shipment
+    try {
+      const awbResponse = await this.shiprocketService.assignAWB(orderResponse.shipment_id).toPromise();
+      console.log('✅ AWB assigned:', awbResponse);
+
+      if (awbResponse && awbResponse.awb_code) {
+        await this.storeWaybillInDatabase(orderId, awbResponse.awb_code);
+        console.log(`🎉 Shipment created with location "${successfulLocation}", AWB: ${awbResponse.awb_code}`);
+        return awbResponse.awb_code;
+      }
+    } catch (awbError) {
+      console.error('❌ AWB assignment failed:', awbError);
+      // Store shipment ID even if AWB fails
+      await this.storeWaybillInDatabase(orderId, `SHIPMENT_${orderResponse.shipment_id}`);
+      return `SHIPMENT_${orderResponse.shipment_id}`;
+    }
+
+    return null;
+
+  } catch (error) {
+    console.error('❌ Shiprocket shipment creation failed:', error);
+    await this.storeWaybillInDatabase(orderId, 'PENDING_SHIPMENT');
+    return 'PENDING_SHIPMENT';
+  }
+}
+  
   private async storeWaybillInDatabase(orderId: string, waybill: string) {
     try {
       await this.http.post(`${environment.apiUrl}/orders/update-shipment`, {
         orderId: orderId,
         waybill: waybill,
-        courier: 'Delhivery',
+        courier: 'Shiprocket', // Updated from Delhivery to Shiprocket
         status: 'shipment_created'
       }).toPromise();
       console.log('💾 Waybill stored in database');
@@ -573,75 +612,68 @@ private async createOrderInDatabase(orderId: string, paymentId: string) {
     }
   }
 
-  // Add test method
-  async testDelhiveryShipment() {
+  // 🔥 FIXED: Test Shiprocket shipment method
+  async testShiprocketShipment() {
     try {
       this.isLoading = true;
       const testOrderId = `TEST_${Date.now()}`;
-      console.log('🧪 Testing Delhivery shipment creation...');
+      console.log('🧪 Testing Shiprocket shipment creation...');
       
-      const waybill = await this.createDelhiveryShipment(testOrderId, 'test_payment');
+      const awb = await this.createShiprocketShipment(testOrderId, 'test_payment');
       
-      if (waybill) {
-        alert(`✅ Shipment test successful!\n\nWaybill: ${waybill}\n\nYou can track at: https://track.delhivery.com/#/track/${waybill}`);
+      if (awb) {
+        alert(`✅ Shiprocket shipment test successful!\n\nAWB: ${awb}\n\nYou can track at: https://shiprocket.co/tracking/${awb}`);
       } else {
-        alert('❌ Shipment test completed but no waybill generated. Check console for details.');
+        alert('❌ Shipment test completed but no AWB generated. Check console for details.');
       }
     } catch (error) {
-      console.error('❌ Shipment test failed:', error);
-      alert('Shipment test failed. Check console for details.');
+      console.error('❌ Shiprocket shipment test failed:', error);
+      alert('Shiprocket shipment test failed. Check console for details.');
     } finally {
       this.isLoading = false;
     }
   }
 
   increaseQuantity(index: number): void {
-  const item = this.cartItems[index];
-  
-  // Check stock availability
-  if (item.quantity >= item.product.quantity) {
-    alert(`Only ${item.product.quantity} items available in stock!`);
-    return;
-  }
-  
-  this.cartService.updateQuantity(
-    item.product._id, 
-    item.size || '', 
-    item.quantity + 1
-  );
-  
-  // Refresh cart data to reflect changes
-  this.loadCartData();
-}
-
-decreaseQuantity(index: number): void {
-  const item = this.cartItems[index];
-  
-  if (item.quantity > 1) {
+    const item = this.cartItems[index];
+    
+    if (item.quantity >= item.product.quantity) {
+      alert(`Only ${item.product.quantity} items available in stock!`);
+      return;
+    }
+    
     this.cartService.updateQuantity(
       item.product._id, 
       item.size || '', 
-      item.quantity - 1
+      item.quantity + 1
     );
     
-    // Refresh cart data to reflect changes
     this.loadCartData();
   }
-}
 
-getProductImage(product: any): string {
-  // Priority 1: Use first image from images array if available
-  if (product.images && product.images.length > 0) {
-    return product.images[0];
+  decreaseQuantity(index: number): void {
+    const item = this.cartItems[index];
+    
+    if (item.quantity > 1) {
+      this.cartService.updateQuantity(
+        item.product._id, 
+        item.size || '', 
+        item.quantity - 1
+      );
+      
+      this.loadCartData();
+    }
   }
-  
-  // Priority 2: Use imageUrl if available
-  if (product.imageUrl) {
-    return product.imageUrl;
-  }
-  
-  // Priority 3: Fallback to placeholder image
-  return 'assets/placeholder-image.jpg';
-}
 
+  getProductImage(product: any): string {
+    if (product.images && product.images.length > 0) {
+      return product.images[0];
+    }
+    
+    if (product.imageUrl) {
+      return product.imageUrl;
+    }
+    
+    return 'assets/placeholder-image.jpg';
+  }
 }

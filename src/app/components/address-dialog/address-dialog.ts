@@ -1,15 +1,14 @@
-// address-dialog.ts - UPDATED
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
   MAT_DIALOG_DATA, 
   MatDialogRef, 
-  MatDialogModule, 
   MatDialogTitle, 
   MatDialogContent, 
   MatDialogActions, 
-  MatDialogClose 
+  MatDialogClose,
+  MatDialogConfig 
 } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -24,7 +23,6 @@ import { Address } from '../../models/address.model';
   imports: [
     CommonModule,
     FormsModule,
-    MatDialogModule,
     MatDialogTitle,
     MatDialogContent,
     MatDialogActions,
@@ -38,7 +36,7 @@ import { Address } from '../../models/address.model';
   templateUrl: './address-dialog.html',
   styleUrls: ['./address-dialog.scss']
 })
-export class AddressDialogComponent {
+export class AddressDialogComponent implements OnInit {
   address: Address;
   isEdit: boolean;
 
@@ -59,6 +57,29 @@ export class AddressDialogComponent {
       isDefault: false,
       type: 'home'
     };
+  }
+
+  ngOnInit() {
+    // Configure dialog for mobile responsiveness
+    this.configureDialogForMobile();
+  }
+
+  private configureDialogForMobile() {
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+      const dialogConfig: MatDialogConfig = {
+        maxWidth: '95vw',
+        width: '95vw',
+        height: 'auto',
+        maxHeight: '90vh'
+      };
+      
+      // Apply mobile configuration
+      Object.keys(dialogConfig).forEach(key => {
+        (this.dialogRef as any)[key] = (dialogConfig as any)[key];
+      });
+    }
   }
 
   onCancel(): void {

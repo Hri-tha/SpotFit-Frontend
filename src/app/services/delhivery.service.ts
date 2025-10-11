@@ -1,4 +1,4 @@
-// services/delhivery.service.ts - UPDATED
+// services/delhivery.service.ts - FIXED INTERFACE
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
@@ -51,14 +51,26 @@ export interface CreateShipmentRequest {
   };
 }
 
+// 🔥 FIXED: Updated interface to match actual API response
 export interface CreateShipmentResponse {
-  packages: Array<{
+  success: boolean;
+  waybill?: string;
+  shipment?: {
+    packages?: Array<{
+      waybill: string;
+      status: string;
+      sort_code: string;
+    }>;
+    waybill?: string;
+  };
+  packages?: Array<{
     waybill: string;
     status: string;
     sort_code: string;
   }>;
-  success: boolean;
-  waybill?: string; // Add this for alternative response format
+  pickup?: any;
+  message?: string;
+  pickupAdded?: boolean;
 }
 
 @Injectable({
@@ -79,15 +91,11 @@ export class DelhiveryService {
       map((response: any) => {
         console.log('📦 Raw API Response:', response);
         
-        // Handle different response formats
         if (response && Array.isArray(response)) {
-          // If response is array, take first item
           return response[0];
         } else if (response && response.deliverable !== undefined) {
-          // If response has deliverable property
           return response;
         } else {
-          // Default fallback
           return { deliverable: false, error: 'Invalid response format' };
         }
       })
@@ -102,14 +110,42 @@ export class DelhiveryService {
   }
 
   /**
-   * Create shipment - via your backend
+   * Create shipment - NOW AUTOMATICALLY ADDS TO PICKUP
    */
   createShipment(shipmentData: CreateShipmentRequest): Observable<CreateShipmentResponse> {
-    console.log('🚚 Creating shipment:', shipmentData);
+    console.log('🚚 Creating shipment (will auto-add to pickup):', shipmentData);
     
     return this.http.post<CreateShipmentResponse>(
       `${this.backendUrl}/delhivery/shipment/create`, 
       shipmentData
+    ).pipe(
+      map((response: any) => {
+        console.log('✅ Shipment created and added to pickup:', response);
+        
+        // Extract waybill from multiple possible locations
+        let waybill = response.waybill;
+        
+        // Check in top-level packages
+        if (!waybill && response.packages && response.packages.length > 0) {
+          waybill = response.packages[0].waybill;
+        }
+        
+        // Check in shipment.packages
+        if (!waybill && response.shipment?.packages?.length > 0) {
+          waybill = response.shipment.packages[0].waybill;
+        }
+        
+        // Check in shipment.waybill
+        if (!waybill && response.shipment?.waybill) {
+          waybill = response.shipment.waybill;
+        }
+
+        return {
+          ...response,
+          waybill: waybill,
+          pickupAdded: !!response.pickup
+        } as CreateShipmentResponse;
+      })
     );
   }
 
@@ -139,6 +175,34 @@ export class DelhiveryService {
         pincode,
         weight: weight.toString()
       }
+    });
+  }
+
+  /**
+   * Create pickup request manually (fallback if auto-pickup fails)
+   */
+  createPickupRequest(pickupData: {
+    pickup_location?: string;
+    pickup_date?: string;
+    pickup_time?: string;
+    expected_package_count?: number;
+    waybills?: string[];
+  }): Observable<any> {
+    console.log('📦 Creating manual pickup request:', pickupData);
+    
+    return this.http.post(`${this.backendUrl}/delhivery/pickup/request`, pickupData);
+  }
+
+  /**
+   * Add existing waybills to pickup
+   */
+  addToPickup(waybills: string[], pickupDate?: string, pickupTime?: string): Observable<any> {
+    console.log('📦 Adding waybills to pickup:', waybills);
+    
+    return this.http.post(`${this.backendUrl}/delhivery/pickup/add-waybills`, {
+      waybills,
+      pickup_date: pickupDate,
+      pickup_time: pickupTime
     });
   }
 }
